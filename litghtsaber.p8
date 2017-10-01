@@ -4,21 +4,38 @@ __lua__
 function _init()
  t = 0
  sbr = init_saber()
- cls()
+
+ --mouse
+ poke(0x5f2d,1)
+ mx=64 my=110 mb=0
+ mbcd=0
 end
 
 function _update()
  t += .015
 
- if (btn(0)) sbr.x-=12
- if (btn(1)) sbr.x+=12
- if (btn(2)) sbr.y-=12
- if (btn(3)) sbr.y+=12
+ -- if (btn(0)) sbr.x-=12
+ -- if (btn(1)) sbr.x+=12
+ -- if (btn(2)) sbr.y-=12
+ -- if (btn(3)) sbr.y+=12
 
  if (btn(4)) sbr.a+=.06
  if (btn(5)) sbr.a-=.06
+
+ mx, my, mb = mouse()
+ local pressed = false
+ if mb==1 and mbcd==0 then
+  pressed = true
+  mbcd = 10
+ end
+ mbcd = max(mbcd - 1, 0)
+
+ sbr.x = lerp(sbr.x, mx, .9)
+ sbr.y = lerp(sbr.y, my, .9)
+ -- if (pressed) sbr.toggle(sbr)
  -- shift key
  if (btnp(4,1)) sbr.toggle(sbr)
+
 
  sbr.update(sbr)
 end
@@ -26,6 +43,12 @@ end
 function _draw()
  cls()
  sbr.draw(sbr)
+ print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
+end
+
+-- x, y, button
+function mouse()
+ return stat(32) - 1, stat(33) - 1, stat(34)
 end
 
 function init_saber()
