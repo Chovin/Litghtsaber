@@ -4,6 +4,12 @@ __lua__
 function _init()
  t = 0
  sbr = init_saber()
+ sbr2 = init_saber(11)
+ sbr2.t += rnd(128)
+ sbr2.x=20
+ sbr2.y=100
+ sbr2.a=.9
+ sbr2.toggle(sbr2)
 
  --mouse
  poke(0x5f2d,1)
@@ -36,13 +42,14 @@ function _update()
  -- shift key
  if (btnp(4,1)) sbr.toggle(sbr)
 
-
+ sbr2.update(sbr2)
  sbr.update(sbr)
 end
 
 function _draw()
  cls()
  sbr.draw(sbr)
+ sbr2.draw(sbr2)
  print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
  print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
 end
