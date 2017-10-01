@@ -10,10 +10,17 @@ end
 function _update()
  t += .015
 
- if (btn(0)) sbr.x-=2
- if (btn(1)) sbr.x+=2
- if (btn(2)) sbr.y-=2
- if (btn(3)) sbr.y+=2
+ if (btn(0)) sbr.x-=12
+ if (btn(1)) sbr.x+=12
+ if (btn(2)) sbr.y-=12
+ if (btn(3)) sbr.y+=12
+
+ if (btn(4)) sbr.a+=.06
+ if (btn(5)) sbr.a-=.06
+ -- shift key
+ if (btnp(4,1)) sbr.toggle(sbr)
+
+ sbr.update(sbr)
 end
 
 function _draw()
@@ -25,19 +32,36 @@ function init_saber()
  local s = {
   x=64,
   y=64,
-  a=.25,
-  w=2*8,
-  h=4*8 + 4,
-  sp={}
+  a=0,
+  w=1*8 + 4,
+  h=5*8 + 5,
+  lh=85,
+  lw=7,
+  loh=20,
+  on=false,
+  out=0
  }
- cls()
- spr(1,0,0,2,5)
- for y=0,s.h-1 do for x=0,s.w-1 do 
-  add(s.sp,pget(x,y))
- end end
+ -- not needed. we can use sget
+ -- cls()
+ -- spr(1,0,0,2,5)
+ -- for y=0,s.h-1 do for x=0,s.w-1 do 
+ --  add(s.sp,pget(x,y))
+ -- end end
+
+ s.update=function(s)
+  if s.on then
+   s.out = lerp(s.out, 1, .5)
+  else
+   s.out = lerp(s.out, 0, .5)
+  end
+ end
 
  s.draw=function(s)
   draw_memspr(s)
+ end
+
+ s.toggle = function(s)
+  s.on = not s.on
  end
 
  return s
@@ -84,6 +108,10 @@ function draw_rotated(sx,sy,sw,sh,px,py,r,s)
    end
   end
  end
+end
+
+function lerp(from,to,t)
+ return from+t*(to-from)
 end
 
 __gfx__
