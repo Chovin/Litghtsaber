@@ -44,6 +44,7 @@ function _draw()
  cls()
  sbr.draw(sbr)
  print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
+ print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
 end
 
 -- x, y, button
@@ -59,6 +60,7 @@ function init_saber()
   sy=0,
   it=0,
   a=0,
+  da=0,
   w=1*8 + 4,
   h=5*8 + 5,
   lh=90,
@@ -75,6 +77,25 @@ function init_saber()
  -- end end
 
  s.update=function(s)
+  s.a %= 1
+  -- up
+  if s.a < .25 and s.a > .75 then
+   
+  else 
+
+  end
+
+  s.a += s.da 
+  s.da *= .8
+
+  if s.a > .1 and s.a < .9 then
+   if s.a > .5 then
+    s.a = lerp(s.a, .9, .01)
+   else 
+    s.a = lerp(s.a, .1, .01)
+   end
+  end
+
   if s.on then
    s.out = lerp(s.out, 1, .5)
   else
