@@ -55,6 +55,9 @@ function init_saber()
  local s = {
   x=64,
   y=64,
+  sx=0,
+  sy=0,
+  it=0,
   a=0,
   w=1*8 + 4,
   h=5*8 + 5,
@@ -77,26 +80,40 @@ function init_saber()
   else
    s.out = lerp(s.out, 0, .5)
   end
+  if abs(sbr.x-mx) < .1 and abs(sbr.y-my) < .1 then
+   s.it = min(s.it+.005, 1)
+  else
+   s.it = lerp(s.it, -1, .4)
+  end
+  if s.it >= 0 then
+   s.sx = cos(t/5)*s.it*2
+   s.sy = sin(t/2)*s.it*3
+  else 
+   s.sx = 0
+   s.sy = 0
+  end
  end
 
  s.draw=function(s)
+  local x = s.x+s.sx 
+  local y = s.y+s.sy
   local len = s.out*s.lh
   if s.out > .02 then
    for hr=s.loh,s.loh+len do
-    circfill(cos(s.a+.25)*hr+s.x-rnd(), 
-              sin(s.a+.25)*hr+s.y, s.lw/2, 11)
+    circfill(cos(s.a+.25)*hr+x-rnd(), 
+              sin(s.a+.25)*hr+y, s.lw/2, 11)
    end
    for hr=s.loh,s.loh+len do
-    circfill(cos(s.a+.25)*hr+s.x-rnd(), 
-              sin(s.a+.25)*hr+s.y, s.lw/3, 7)
+    circfill(cos(s.a+.25)*hr+x-rnd(), 
+              sin(s.a+.25)*hr+y, s.lw/3, 7)
    end
   end
   draw_rotated(
    8,0,
    s.on and s.w-3 or s.w
    ,s.h,
-   s.on and s.x-1.5 or s.x
-   ,s.y,
+   s.on and x-1.5 or x
+   ,y,
    s.a,1)
  end
 
