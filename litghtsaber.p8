@@ -3,13 +3,19 @@ version 8
 __lua__
 function _init()
  t = 0
- sbr = init_saber()
- sbr2 = init_saber(11)
- sbr2.t += rnd(128)
- sbr2.x=20
- sbr2.y=100
- sbr2.a=.9
- sbr2.toggle(sbr2)
+ sbr = init_saber(8)
+ -- sbr2 = init_saber(11)
+ -- sbr2.t += rnd(128)
+ -- sbr2.x=20
+ -- sbr2.y=100
+ -- sbr2.a=.9
+ -- sbr2.toggle(sbr2)
+
+ cs = {2,8,14,7,7,14,8,1}
+ tns = .25
+
+ cols = {7,7,7,7,14,8,8,4,2,2,2,1,1}
+
 
  --mouse
  poke(0x5f2d,1)
@@ -25,8 +31,8 @@ function _update()
  -- if (btn(2)) sbr.y-=12
  -- if (btn(3)) sbr.y+=12
 
- if (btn(4)) sbr.a+=.06
- if (btn(5)) sbr.a-=.06
+ if (btn(4)) sbr.a+=.03
+ if (btn(5)) sbr.a-=.03
 
  mx, my, mb = mouse()
  local pressed = false
@@ -42,16 +48,16 @@ function _update()
  -- shift key
  if (btnp(4,1)) sbr.toggle(sbr)
 
- sbr2.update(sbr2)
+ --sbr2.update(sbr2)
  sbr.update(sbr)
 end
 
 function _draw()
  cls()
  sbr.draw(sbr)
- sbr2.draw(sbr2)
- print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
- print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
+ --sbr2.draw(sbr2)
+ -- print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
+ -- print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
 end
 
 -- x, y, button
@@ -71,7 +77,8 @@ function init_saber(c)
   loh=20,
   c=c or 12,
   on=false,
-  out=0
+  out=0,
+  sparks={}
  }
  -- not needed. we can use sget
  -- cls()
@@ -118,6 +125,13 @@ function init_saber(c)
    s.sx = 0
    s.sy = 0
   end
+
+  if s.on then
+   add(s.sparks, s.spark(s))
+  end
+  for p in all(s.sparks) do 
+   p.update(p)
+  end
  end
 
  s.draw=function(s)
@@ -141,10 +155,97 @@ function init_saber(c)
    s.on and x-1.5 or x
    ,y,
    s.a,1)
+
+  for p in all(s.sparks) do 
+   p.draw(p)
+   for o in all(s.sparks) do 
+    if p != o then
+     if mid(p.y-tns*20, p.y, o.y)==o.y then
+      if mid(p.ax-tns, p.ax, o.ax)==o.ax or
+         mid((p.ax-tns)+1, p.ax+1, o.ax)==o.ax  then
+       local ds = distance(p.ax, p.y/(tns*1000),
+                              o.ax, o.y/(tns*1000))
+       if ds < tns then
+        local fds = -(ds - tns)
+        p.r += fds*s.lw 
+        o.r += fds*s.lw
+        local c = cols[flr((ds/tns)*(#cols-1)+1)]
+        local px, py = p.point(p)
+        local ox, oy = o.point(o)
+        line(px,py,ox,oy,c)
+       end
+      end
+     end
+    end
+   end
+  end
  end
 
  s.toggle = function(s)
   s.on = not s.on
+ end
+
+ s.spark=function(s)
+  local p = {
+   sbr=s,
+   ba=s.a,
+   by=s.y,
+   bx=s.x,
+   ax=rnd(),
+   dax=rnd(.02),
+   y=rnd(s.h),
+   dy=-rnd(2)-1,
+   t=0,
+   deadt=rnd(90)+15,
+   r=s.lw
+  }
+  p.update=function(d)
+   d.t += 1
+   d.ax += d.dax
+   d.ax %= 1
+   d.y += d.dy
+
+   local pdead = d.t/d.deadt
+   local plife = 1-pdead
+   d.dy += rnd(plife/2) - plife/3
+   d.dy += rnd(.1) - .07
+   d.dax += rnd(plife*.01) - plife/200
+   d.dax += rnd(.001) - .0005
+
+   d.dy = lerp(d.dy, 0, .1)
+
+   if d.y > d.sbr.lh+20 then
+    del(d.sbr.sparks, d)
+   end
+
+   d.r = lerp(d.r, d.sbr.lw+d.sbr.lw*pdead*2, .2)
+
+   if d.t > d.deadt then 
+    del(d.sbr.sparks, d)
+   end
+
+   d.ci = flr(((d.ax+.5)%1)*(#cs)+1)
+   d.z = abs(d.ci-#cs/2)
+   d.c = cs[d.ci]
+
+  end
+  p.draw=function(d)
+   local x2, y2 = p.point(p)
+   local w = (#cs/2-d.z)*(d.r/d.sbr.lw)
+   circfill(x2,y2, w/8,d.c)
+   pset(x2,y2,d.c)
+  end
+  p.point= function(d)
+   local b = d.sbr
+   local x = sin(d.ax)*d.r/2
+   local cy = d.y - b.lh/2 - b.loh
+   local x2 = x*cos(d.ba) - cy*sin(d.ba)
+   local y2 = cy*cos(d.ba) + x*sin(d.ba)
+   x2 = flr(x2+d.bx)
+   y2 = flr(y2+d.by)
+   return x2,y2
+  end
+  return p
  end
 
  return s
@@ -191,6 +292,14 @@ function draw_rotated(sx,sy,sw,sh,px,py,r,s)
    end
   end
  end
+end
+
+function distance(x1,y1,x2,y2)
+ dx = abs(x2-x1)
+ dy = abs(y2-y1)
+ d = max(dx,dy)
+ n = min(dx,dy)/d
+ return sqrt(n*n+1) * d
 end
 
 function lerp(from,to,t)
