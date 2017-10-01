@@ -43,12 +43,45 @@ function init_saber()
  return s
 end
 
-function draw_memspr(s)
- for i, c in pairs(s.sp) do 
-  local x = (i-1)%s.w + s.x
-  local y = flr((i-1)/s.w) + s.y
-  if c != 0 then
-   pset(x,y,c)
+--[[
+sprite rotation without holes: 
+creamdog
+https://www.lexaloffle.com/bbs/?tid=3936
+ // quick and dirty way of rotating a sprite
+ sx = spritecheet x-coord
+ sy = spritecheet y-coord
+ sw = pixel width of source sprite
+ sh = pixel height of source sprite
+ px = x-coord of where to draw rotated sprite on screen
+ py = x-coord of where to draw rotated sprite on screen
+ r = amount to rotate (radians)
+ s = 1.0 for normal scale, 0.5 for half, etc
+]]
+function draw_rotated(sx,sy,sw,sh,px,py,r,s)
+ -- loop through all the pixels
+ for y=sy,sy+sh,1 do
+  for x=sx,sx+sw,1 do
+   -- get source pixel color
+   col = sget(x,y)
+   -- skip transparent pixel (zero in this case)
+   if (col != 0) then
+    -- rotate pixel around center
+    local xx = (x-sx)-sw/2
+    local yy = (y-sy)-sh/2
+    local x2 = (xx*cos(r) - yy*sin(r))*s
+    local y2 = (yy*cos(r) + xx*sin(r))*s
+    -- translate rotated pixel to where we want to draw it on screen
+    local x3 = flr(x2+px)
+    local y3 = flr(y2+py)
+    -- use rectfill if scale is > 1, otherwise just pixel it
+    if (s >= 1) then
+     local w = flr(x2+px+s)
+     local h = flr(y2+py+s)
+     rectfill(x3,y3,w,h,col)
+    else
+     pset(x3,y3,col)
+    end
+   end
   end
  end
 end
