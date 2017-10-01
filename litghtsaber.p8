@@ -52,20 +52,17 @@ function mouse()
  return stat(32) - 1, stat(33) - 1, stat(34)
 end
 
-function init_saber()
+function init_saber(c)
  local s = {
-  x=64,
-  y=64,
-  sx=0,
-  sy=0,
-  it=0,
-  a=0,
-  da=0,
+  x=64,y=64,
+  sx=0,sy=0,
+  it=0,t=0,
+  a=0,da=0,
   w=1*8 + 4,
   h=5*8 + 5,
-  lh=90,
-  lw=7,
+  lh=90,lw=7,
   loh=20,
+  c=c or 12,
   on=false,
   out=0
  }
@@ -77,6 +74,7 @@ function init_saber()
  -- end end
 
  s.update=function(s)
+  s.t+=.015
   s.a %= 1
   -- up
   if s.a < .25 and s.a > .75 then
@@ -107,8 +105,8 @@ function init_saber()
    s.it = lerp(s.it, -1, .4)
   end
   if s.it >= 0 then
-   s.sx = cos(t/5)*s.it*2
-   s.sy = sin(t/2)*s.it*3
+   s.sx = cos(s.t/5)*s.it*2
+   s.sy = sin(s.t/2)*s.it*3
   else 
    s.sx = 0
    s.sy = 0
@@ -122,7 +120,7 @@ function init_saber()
   if s.out > .02 then
    for hr=s.loh,s.loh+len do
     circfill(cos(s.a+.25)*hr+x-rnd(), 
-              sin(s.a+.25)*hr+y, s.lw/2, 11)
+              sin(s.a+.25)*hr+y, s.lw/2, s.c)
    end
    for hr=s.loh,s.loh+len do
     circfill(cos(s.a+.25)*hr+x-rnd(), 
