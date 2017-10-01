@@ -58,7 +58,7 @@ function init_saber()
   a=0,
   w=1*8 + 4,
   h=5*8 + 5,
-  lh=85,
+  lh=90,
   lw=7,
   loh=20,
   on=false,
