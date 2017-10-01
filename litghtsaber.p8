@@ -19,6 +19,10 @@ function _init()
  mbcd=0
  --for menu option later
  mouse_control = true
+
+ rotating = false
+ rdir = 0
+ pdir = ''
 end
 
 function _update()
@@ -29,19 +33,68 @@ function _update()
  -- if (btn(2)) sbr.y-=12
  -- if (btn(3)) sbr.y+=12
 
- if (btn(4)) sbr.a+=.06
- if (btn(5)) sbr.a-=.06
+ if mouse_control then 
+  mx, my, mb = mouse()
+  local pressed = false
+  if mb==1 and mbcd==0 then
+   pressed = true
+   mbcd = 10
+  end
+  mbcd = max(mbcd - 1, 0)
 
- mx, my, mb = mouse()
- local pressed = false
- if mb==1 and mbcd==0 then
-  pressed = true
-  mbcd = 10
+  local ds = distance(mx,my,sbr.x,sbr.y)
+  if (btn(4) or mb==1) then
+   local dx = mx - sbr.x
+   local dy = my - sbr.y
+   change_dir = false
+   -- debug
+   if rotating and 
+      ((abs(dy)<3 and abs(dx)<3) or
+       (pdir=='y' and abs(dy) > abs(dx)) or 
+       (pdir=='x' and abs(dx) > abs(dy))
+      ) then
+    if rdir > 0 then
+
+    else
+
+    end
+   elseif abs(dy) > abs(dx) then 
+    pdir = 'y'
+    if sbr.a > .5 then
+     rdir = -sgn(dy)
+    else 
+     rdir = sgn(dy)
+    end
+   else 
+    pdir = 'x'
+    if sbr.a < .25 or sbr.a > .75 then 
+     rdir = -sgn(dx)
+    else 
+     rdir = sgn(dx)
+    end
+   end
+   rotating = true
+  else 
+   rotating = false
+   rdir = 0
+  end
+
+  sbr.da = lerp(sbr.da, rdir*.05*(ds/5), .5)
+  
+
+  sbr.x = lerp(sbr.x, mx, .9)
+  sbr.y = lerp(sbr.y, my, .9)
+ else 
+  if (btn(0)) sbr.x-=12
+  if (btn(1)) sbr.x+=12
+  if (btn(2)) sbr.y-=12
+  if (btn(3)) sbr.y+=12
+
+  if (btn(4)) sbr.a+=.06
+  if (btn(5)) sbr.a-=.06
  end
- mbcd = max(mbcd - 1, 0)
 
- sbr.x = lerp(sbr.x, mx, .9)
- sbr.y = lerp(sbr.y, my, .9)
+
  -- if (pressed) sbr.toggle(sbr)
  -- shift key
  if (btnp(4,1)) sbr.toggle(sbr)
