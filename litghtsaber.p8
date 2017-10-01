@@ -193,6 +193,14 @@ function draw_rotated(sx,sy,sw,sh,px,py,r,s)
  end
 end
 
+function distance(x1,y1,x2,y2)
+ local dx = abs(x2-x1)
+ local dy = abs(y2-y1)
+ local d = max(dx,dy)
+ local n = min(dx,dy)/d
+ return sqrt(n*n+1) * d
+end
+
 function lerp(from,to,t)
  return from+t*(to-from)
 end
