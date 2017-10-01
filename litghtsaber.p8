@@ -14,7 +14,11 @@ function _init()
  --mouse
  poke(0x5f2d,1)
  mx=64 my=110 mb=0
+ --mouse button cooldown
+ --like btnp w/ mouse
  mbcd=0
+ --for menu option later
+ mouse_control = true
 end
 
 function _update()
@@ -62,23 +66,18 @@ end
 function init_saber(c)
  local s = {
   x=64,y=64,
-  sx=0,sy=0,
-  it=0,t=0,
-  a=0,da=0,
+  -- should add dx/dy for non-mouse mvmt
+  sx=0,sy=0, -- idle offsets
+  it=0,t=0,  -- idle time and timer
+  a=0,da=0,  -- angle, dangle
   w=1*8 + 4,
   h=5*8 + 5,
-  lh=90,lw=7,
-  loh=20,
+  lh=90,lw=7,-- laser w/h
+  loh=20,     -- laser offset h
   c=c or 12,
   on=false,
-  out=0
+  out=0       -- % turned on (animation)
  }
- -- not needed. we can use sget
- -- cls()
- -- spr(1,0,0,2,5)
- -- for y=0,s.h-1 do for x=0,s.w-1 do 
- --  add(s.sp,pget(x,y))
- -- end end
 
  s.update=function(s)
   s.t+=.015
