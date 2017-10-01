@@ -57,7 +57,24 @@ function init_saber()
  end
 
  s.draw=function(s)
-  draw_memspr(s)
+  local len = s.out*s.lh
+  if s.out > .02 then
+   for hr=s.loh,s.loh+len do
+    circfill(cos(s.a+.25)*hr+s.x-rnd(), 
+              sin(s.a+.25)*hr+s.y, s.lw/2, 11)
+   end
+   for hr=s.loh,s.loh+len do
+    circfill(cos(s.a+.25)*hr+s.x-rnd(), 
+              sin(s.a+.25)*hr+s.y, s.lw/3, 7)
+   end
+  end
+  draw_rotated(
+   8,0,
+   s.on and s.w-3 or s.w
+   ,s.h,
+   s.on and s.x-1.5 or s.x
+   ,s.y,
+   s.a,1)
  end
 
  s.toggle = function(s)
