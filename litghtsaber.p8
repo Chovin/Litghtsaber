@@ -274,12 +274,9 @@ function init_saber(c)
      end
     end
     if p != o and not lines[pi..'|'..oi] then
-     if mid(p.vy-tns, p.vy+tns, o.vy)==o.vy 
-        and 
-        mid(p.vx-tns, p.vx+tns, o.vx)==o.vx 
-        and mid(p.z-tns, p.z+tns, o.z)==o.z 
-        --true
-        then
+     if p.vy+tns > o.vy and p.vy-tns < o.vy and
+        p.vx+tns > o.vx and p.vx-tns < o.vx and
+        p.z+tns > o.z and p.z-tns < o.z then
       local ds = distance3d(p.vx, p.vy, p.z/2,
                                o.vx, o.vy, o.z/2)
       --ds /= tns*1000
