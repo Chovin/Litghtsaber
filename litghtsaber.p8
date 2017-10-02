@@ -272,7 +272,7 @@ function init_saber(c)
    by=s.y,
    bx=s.x,
    ax=rnd(),
-   dax=rnd(.02),
+   dax=rnd(.01),
    y=rnd(s.h),
    dy=-rnd(2)-1,
    t=0,
@@ -297,13 +297,13 @@ function init_saber(c)
    d.dax += rnd(plife*.01) - plife/200
    d.dax += rnd(.001) - .0005
 
-   d.dy = lerp(d.dy, 0, .1)
+   d.dy = lerp(d.dy, 0, .125)
 
    if d.y > d.sbr.lh+20 then
     del(d.sbr.sparks, d)
    end
 
-   d.r = lerp(d.r, d.sbr.lw+d.sbr.lw*pdead*2, .2)
+   d.r = lerp(d.r, d.sbr.lw+d.sbr.lw*pdead*2, .3)
 
    if d.t > d.deadt then 
     del(d.sbr.sparks, d)
