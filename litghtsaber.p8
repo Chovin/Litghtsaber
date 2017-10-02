@@ -101,7 +101,7 @@ function _update()
    rdir = 0
   end
 
-  sbr.da = lerp(sbr.da, rdir*.05*(ds/5), .5)
+  sbr.da = lerp(sbr.da, rdir*.05*(ds/10), .5)
   
 
   sbr.x = lerp(sbr.x, mx, .9)
