@@ -12,9 +12,9 @@ function _init()
  -- sbr2.toggle(sbr2)
 
  cs = {2,8,14,7,7,14,8,1}
- tns = .25
+ tns = 7
 
- cols = {7,7,7,7,14,8,8,4,2,2,2,1,1}
+ cols = {7,7,7,7,14,14,8,8,2,2,2,1,1}
 
 
  --mouse
@@ -157,23 +157,30 @@ function init_saber(c)
    s.a,1)
 
   for p in all(s.sparks) do 
-   p.draw(p)
+   if(not p.calcd) p.draw(p)
    for o in all(s.sparks) do 
+    if(not o.calcd) o.draw(o)
     if p != o then
-     if mid(p.y-tns*20, p.y, o.y)==o.y then
-      if mid(p.ax-tns, p.ax, o.ax)==o.ax or
-         mid((p.ax-tns)+1, p.ax+1, o.ax)==o.ax  then
-       local ds = distance(p.ax, p.y/(tns*1000),
-                              o.ax, o.y/(tns*1000))
-       if ds < tns then
-        local fds = -(ds - tns)
-        p.r += fds*s.lw 
-        o.r += fds*s.lw
-        local c = cols[flr((ds/tns)*(#cols-1)+1)]
-        local px, py = p.point(p)
-        local ox, oy = o.point(o)
-        line(px,py,ox,oy,c)
-       end
+     if --mid(p.vy-tns, p.vy, o.vy)==o.vy 
+        --and 
+        mid(p.vx-tns, p.vx, o.vx)==o.vx 
+        and mid(p.z-tns, p.z, o.z)==o.z 
+        --true
+        then
+      local ds = distance3d(p.vx, p.vy, p.z,
+                               o.vx, o.vy, o.z)
+      --ds /= tns*1000
+      if ds < tns then
+       local fds = -(ds - tns)
+       p.r += fds*s.lw/14 
+       o.r += fds*s.lw/14
+       --p.ax += rnd(.006)-.003
+       --o.ax += rnd(.006)-.003
+       --opdir = sgn(p.y - o.y)
+       --p.dy += rnd()*opdir/2
+       --o.dy += -rnd()*opdir/2
+       local c = cols[flr(((ds/2)/tns)*(#cols-3)+1+(p.z+o.z-1))]
+       line(p.vx,p.vy,o.vx,o.vy,c)
       end
      end
     end
@@ -197,9 +204,14 @@ function init_saber(c)
    dy=-rnd(2)-1,
    t=0,
    deadt=rnd(90)+15,
-   r=s.lw
+   r=s.lw,
+
+   vx=0,
+   vy=0,
+   calcd=false
   }
   p.update=function(d)
+   d.calcd=false
    d.t += 1
    d.ax += d.dax
    d.ax %= 1
@@ -243,8 +255,11 @@ function init_saber(c)
    local y2 = cy*cos(d.ba) + x*sin(d.ba)
    x2 = flr(x2+d.bx)
    y2 = flr(y2+d.by)
+   d.vx, d.vy = x2, y2
+   d.calcd = true
    return x2,y2
   end
+  p.point(p)
   return p
  end
 
@@ -294,12 +309,20 @@ function draw_rotated(sx,sy,sw,sh,px,py,r,s)
  end
 end
 
-function distance(x1,y1,x2,y2)
- dx = abs(x2-x1)
- dy = abs(y2-y1)
- d = max(dx,dy)
- n = min(dx,dy)/d
- return sqrt(n*n+1) * d
+function distance3d(x1,y1,z1,x2,y2,z2)
+ local dx = abs(x2-x1)
+ local dy = abs(y2-y1)
+ local dz = abs(z2-z1)
+ if dx > dy then
+  d = max(dx, dz)
+  n = min(dy, dz)/d
+  m = max(dy, dz)/d
+ else
+  d = max(dy, dz)
+  n = min(dx, dz)/d
+  m = max(dx, dz)/d
+ end
+ return sqrt(n*n+m*m+1) * d
 end
 
 function lerp(from,to,t)
