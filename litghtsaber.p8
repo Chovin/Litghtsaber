@@ -207,6 +207,12 @@ function init_saber(c)
  end
 
  s.draw=function(s)
+
+   -- draw behind sparks
+  local after = s.draw_back_sparks(s)
+
+
+  -- draw saber
   local x = s.x+s.sx 
   local y = s.y+s.sy
   local len = s.out*s.lh
@@ -228,38 +234,91 @@ function init_saber(c)
    ,y,
    s.a,1)
 
-  for p in all(s.sparks) do 
-   if(not p.calcd) p.draw(p)
-   for o in all(s.sparks) do 
-    if(not o.calcd) o.draw(o)
-    if p != o then
-     if --mid(p.vy-tns, p.vy, o.vy)==o.vy 
-        --and 
-        mid(p.vx-tns, p.vx, o.vx)==o.vx 
-        and mid(p.z-tns, p.z, o.z)==o.z 
+  -- draw in front sparks
+  for i, p in pairs(s.sparks) do 
+   if p.ax <= .25 or p.ax > .75 then 
+    p.draw(p)
+   end
+  end
+  for i, l in pairs(after) do 
+   line(l[1],l[2],l[3],l[4],l[5])
+  end
+
+
+ end
+
+ s.draw_back_sparks=function(s)
+  local lines = {}
+  local after = {}
+  for pi, p in pairs(s.sparks) do 
+   if not p.calcd then
+    if p.ax > .25 and p.ax <= .75 then 
+     p.draw(p)
+    else
+     p.point(p)
+    end
+   end
+   for oi, o in pairs(s.sparks) do 
+    if not o.calcd then
+     if o.ax > .25 and o.ax <= .75 then 
+      o.draw(o)
+     else
+      o.point(o)
+     end
+    end
+    if p != o and not lines[pi..'|'..oi] then
+     if mid(p.vy-tns, p.vy+tns, o.vy)==o.vy 
+        and 
+        mid(p.vx-tns, p.vx+tns, o.vx)==o.vx 
+        and mid(p.z-tns, p.z+tns, o.z)==o.z 
         --true
         then
-      local ds = distance3d(p.vx, p.vy, p.z,
-                               o.vx, o.vy, o.z)
+      local ds = distance3d(p.vx, p.vy, p.z/2,
+                               o.vx, o.vy, o.z/2)
       --ds /= tns*1000
+      -- have d.ax factor into calc
+      -- for more spinny effect
+      --local min(abs(p.ax-o.ax), )
       if ds < tns then
+--[[       color(8)
+       print(ds)
+       flip()--]]
        local fds = -(ds - tns)
-       p.r += fds*s.lw/14 
+       p.r += fds*s.lw/14
        o.r += fds*s.lw/14
        --p.ax += rnd(.006)-.003
        --o.ax += rnd(.006)-.003
        --opdir = sgn(p.y - o.y)
        --p.dy += rnd()*opdir/2
        --o.dy += -rnd()*opdir/2
-       local tc = flr(((ds/2)/tns)*(#cols['c'..sbr.c]-3)+1+(p.z+o.z-1)) or 0
-       local c = cols['c'..sbr.c][tc]
-       line(p.vx,p.vy,o.vx,o.vy,c)
+
+       -- average z / r ratio (-1 to 1/furthest to closest)
+       local avgr = (p.r+o.r)/2
+       local depth = ((p.z+o.z)/2)/(avgr)
+       local clist = cols['c'..sbr.c]
+       local ci = #clist / 4
+       ci = flr(ci + ((ds)/tns)*(#clist/2) - (depth * ci) + 1 - 
+             (avgr - sbr.lw)/sbr.lw
+            )
+       --local tc = flr(((ds/2)/tns)*(#cols['c'..sbr.c]-3)+1+((p.z+o.z)-1)) or 0
+       local c = cols['c'..sbr.c][ci]
+--[[       color(c==0 and 12 or c)
+       print(ci)
+       flip()--]]
+       lines[pi..'|'..oi] = true
+       if (p.ax <= .25 or p.ax > .75) and 
+          (o.ax <= .25 or o.ax > .75) then
+        add(after, {p.vx,p.vy,o.vx,o.vy,c})
+       else
+        line(p.vx,p.vy,o.vx,o.vy,c)
+       end
       end
      end
     end
    end
   end
- end
+  return after
+ end -- end draw_back_sparks
 
  s.toggle = function(s)
   s.on = not s.on
