@@ -310,15 +310,15 @@ function init_saber(c)
    end
 
    d.ci = flr(((d.ax+.5)%1)*(#cs['c'..d.sbr.c])+1)
-   d.z = abs(d.ci-#cs['c'..d.sbr.c]/2)
+   d.z = cos(d.ax)*d.r
    d.c = cs['c'..d.sbr.c][d.ci]
 
   end
   p.draw=function(d)
-   local x2, y2 = p.point(p)
-   local w = (#cs['c'..d.sbr.c]/2-d.z)*(d.r/d.sbr.lw)
-   circfill(x2,y2, w/8,d.c)
-   pset(x2,y2,d.c)
+   if (not d.calcd) p.point(p)
+   local w = (#cs['c'..d.sbr.c]/2-(-d.z/(d.r) + 1)*3)*(d.r/d.sbr.lw)
+   circfill(d.vx,d.vy, w/8,d.c)
+   --pset(x2,y2,d.c)
   end
   p.point= function(d)
    local b = d.sbr
