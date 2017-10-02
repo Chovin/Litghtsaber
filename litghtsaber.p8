@@ -382,6 +382,14 @@ function distance3d(x1,y1,z1,x2,y2,z2)
  return sqrt(n*n+m*m+1) * d
 end
 
+function distance(x1,y1,x2,y2)
+ local dx = abs(x2-x1)
+ local dy = abs(y2-y1)
+ local d = max(dx,dy)
+ local n = min(dx,dy)/d
+ return sqrt(n*n+1) * d
+end
+
 function lerp(from,to,t)
  return from+t*(to-from)
 end
