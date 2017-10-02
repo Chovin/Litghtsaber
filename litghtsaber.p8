@@ -7,18 +7,30 @@ __lua__
 function _init()
  t = 0
  sbr = init_saber(8)
+ sbrci = 1
  -- sbr2 = init_saber(11)
  -- sbr2.t += rnd(128)
  -- sbr2.x=20
  -- sbr2.y=100
  -- sbr2.a=.9
  -- sbr2.toggle(sbr2)
-
- cs = {2,8,14,7,7,14,8,1}
+ sbrcs = {8,11,12,9,6}
+ cs = {
+  c8={2,8,14,7,7,14,8,1},
+  c11={5,3,11,7,7,11,3,1},
+  c12={5,13,12,7,7,12,1,1},
+  c9={5,4,9,7,7,9,4,2},
+  c6={5,15,6,7,7,6,5,1}
+ }
  tns = 7
 
- cols = {7,7,7,7,14,14,8,8,2,2,2,1,1}
-
+ cols = {
+  c8={ 7,7,7,7,14,14,8,8,  2,2,2,1,1},
+  c11={7,7,7,7,11,11,3,3,  5,5,5,1,1},
+  c12={7,7,7,7,12,12,13,13,5,5,1,1,1},
+  c9={ 7,7,7,7,9,9,4,4,    5,5,5,1,1},
+  c6={ 7,7,7,7,6,6,10,10,  5,5,5,1,1}
+ }
 
  --mouse
  poke(0x5f2d,1)
@@ -94,7 +106,10 @@ function _update()
   sbr.x = lerp(sbr.x, mx, .9)
   sbr.y = lerp(sbr.y, my, .9)
 
-  if (btnp(5)) sbr.c += 1
+  if (btnp(5)) then
+   sbrci = sbrci%#sbrcs + 1
+   sbr.c = sbrcs[sbrci]
+  end
  else 
   if (btn(0)) sbr.x-=12
   if (btn(1)) sbr.x+=12
@@ -236,7 +251,8 @@ function init_saber(c)
        --opdir = sgn(p.y - o.y)
        --p.dy += rnd()*opdir/2
        --o.dy += -rnd()*opdir/2
-       local c = cols[flr(((ds/2)/tns)*(#cols-3)+1+(p.z+o.z-1))]
+       local tc = flr(((ds/2)/tns)*(#cols['c'..sbr.c]-3)+1+(p.z+o.z-1)) or 0
+       local c = cols['c'..sbr.c][tc]
        line(p.vx,p.vy,o.vx,o.vy,c)
       end
      end
@@ -293,14 +309,14 @@ function init_saber(c)
     del(d.sbr.sparks, d)
    end
 
-   d.ci = flr(((d.ax+.5)%1)*(#cs)+1)
-   d.z = abs(d.ci-#cs/2)
-   d.c = cs[d.ci]
+   d.ci = flr(((d.ax+.5)%1)*(#cs['c'..d.sbr.c])+1)
+   d.z = abs(d.ci-#cs['c'..d.sbr.c]/2)
+   d.c = cs['c'..d.sbr.c][d.ci]
 
   end
   p.draw=function(d)
    local x2, y2 = p.point(p)
-   local w = (#cs/2-d.z)*(d.r/d.sbr.lw)
+   local w = (#cs['c'..d.sbr.c]/2-d.z)*(d.r/d.sbr.lw)
    circfill(x2,y2, w/8,d.c)
    pset(x2,y2,d.c)
   end
