@@ -23,7 +23,7 @@ function _init()
   c9={5,4,9,7,9,4,2},
   c6={5,15,6,7,6,5,1}
  }
- tns = 7
+ tns = 7.5
 
  cols = {
   c8={ 7,7,7,7,7,7,7,14,14,8,8,8,  4,2,2,1,1,1},
@@ -205,7 +205,7 @@ function init_saber(c)
    s.sy = 0
   end
 
-  if s.on then
+  if s.on and rnd(100)<80 and #s.sparks < 35 then
    add(s.sparks, s.spark(s))
   end
   for p in all(s.sparks) do 
@@ -251,7 +251,7 @@ function init_saber(c)
    line(l[1],l[2],l[3],l[4],l[5])
   end
 
-
+  print(stat(1),0,8)
  end
 
  s.draw_back_sparks=function(s)
@@ -358,10 +358,23 @@ function init_saber(c)
   }
   p.update=function(d)
    d.calcd=false
-   d.t += 1
+   -- any movement makes sparks die sooner
+   -- so sparks die as the are further away
+   local adiff = min(abs(d.ba-d.sbr.a),
+                     abs((min(d.ba,d.sbr.a)+1)-max(d.ba,d.sbr.a)))
+   d.t += 1 + abs(adiff*d.y) 
+            + abs(sbr.y-d.by)/10 
+            + abs(sbr.x-d.bx)/10
+            + (1-d.sbr.out)*4
+   if d.t > d.deadt then 
+    del(d.sbr.sparks, d)
+   end
+   d.y += d.dy
+   if d.y > d.sbr.lh+20 then
+    del(d.sbr.sparks, d)
+   end
    d.ax += d.dax
    d.ax %= 1
-   d.y += d.dy
 
    local pdead = d.t/d.deadt
    local plife = 1-pdead
@@ -372,15 +385,8 @@ function init_saber(c)
 
    d.dy = lerp(d.dy, 0, .125)
 
-   if d.y > d.sbr.lh+20 then
-    del(d.sbr.sparks, d)
-   end
 
-   d.r = lerp(d.r, d.mr+d.mr*pdead*2, .3)
-
-   if d.t > d.deadt then 
-    del(d.sbr.sparks, d)
-   end
+   d.r = lerp(d.r, d.mr+d.mr*pdead*2, .35)
 
    d.ci = flr(((d.ax+.5)%1)*(#cs['c'..d.sbr.c])+1)
    d.z = cos(d.ax)*d.r
