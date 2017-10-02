@@ -163,7 +163,10 @@ function init_saber(c)
   c=c or 12,
   on=false,
   out=0,
-  sparks={}
+  sparks={},
+  pa=0,
+  px=0,
+  py=0
  }
 
  s.update=function(s)
@@ -176,6 +179,7 @@ function init_saber(c)
 
   end
 
+  s.pa = s.a+s.da*.9
   s.a += s.da 
   s.da *= .8
 
@@ -226,8 +230,10 @@ function init_saber(c)
   if s.out > .02 then
    for hr=s.loh,s.loh+len do
     circfill(cos(s.a+.25)*hr+x-rnd(), 
-              sin(s.a+.25)*hr+y, s.lw/2, s.c)
-   end
+             sin(s.a+.25)*hr+y, s.lw/2, s.c)
+    circfill(cos(s.pa+.25)*hr+s.px-rnd(), 
+             sin(s.pa+.25)*hr+s.py, s.lw/2.1, s.c)
+   end  
    for hr=s.loh,s.loh+len do
     circfill(cos(s.a+.25)*hr+x-rnd(), 
               sin(s.a+.25)*hr+y, s.lw/3, 7)
@@ -251,6 +257,8 @@ function init_saber(c)
    line(l[1],l[2],l[3],l[4],l[5])
   end
 
+  s.px = x
+  s.py = y
   print(stat(1),0,8)
  end
 
