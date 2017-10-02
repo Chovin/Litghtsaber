@@ -150,11 +150,11 @@ function init_saber(c)
   s.a += s.da 
   s.da *= .8
 
-  if s.a > .1 and s.a < .9 and s.it>=0 then
+  if s.a > .1 and s.a < .9 and s.it>=-.5 then
    if s.a > .5 then
-    s.a = lerp(s.a, .9, .01*s.it)
+    s.a = lerp(s.a, .9, .01*(s.it+.5))
    else 
-    s.a = lerp(s.a, .1, .01*s.it)
+    s.a = lerp(s.a, .1, .01*(s.it+.5))
    end
   end
 
