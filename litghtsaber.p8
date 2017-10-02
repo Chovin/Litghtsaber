@@ -8,6 +8,7 @@ function _init()
  t = 0
  sbr = init_saber(8)
  sbrci = 1
+ across = true
  -- sbr2 = init_saber(11)
  -- sbr2.t += rnd(128)
  -- sbr2.x=20
@@ -124,6 +125,7 @@ function _update()
  -- if (pressed) sbr.toggle(sbr)
  -- shift key
  if (btnp(4,1)) sbr.toggle(sbr)
+ if (btnp(5,1)) across = not across
 
  --sbr2.update(sbr2)
  sbr.update(sbr)
@@ -132,6 +134,11 @@ end
 function _draw()
  cls()
  sbr.draw(sbr)
+ if across then
+  print('-',0,0)
+ else
+  print('|',0,0)
+ end
  --sbr2.draw(sbr2)
  -- print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
  -- print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
@@ -278,7 +285,13 @@ function init_saber(c)
       --ds /= tns*1000
       -- have d.ax factor into calc
       -- for more spinny effect
-      --local min(abs(p.ax-o.ax), )
+      local ad = min(abs(p.ax-o.ax), 
+                     abs((min(p.ax,o.ax)+1)-max(p.ax,o.ax)))
+      if across then
+       ds -= (ad-.25)*(tns/4)
+      else
+       ds -= (.25-ad)*(tns/4)
+      end
       if ds < tns then
 --[[       color(8)
        print(ds)
@@ -336,6 +349,7 @@ function init_saber(c)
    dy=-rnd(2)-1,
    t=0,
    deadt=rnd(90)+15,
+   mr=rnd(s.lw/2)+s.lw/2,
    r=s.lw,
 
    vx=0,
@@ -362,7 +376,7 @@ function init_saber(c)
     del(d.sbr.sparks, d)
    end
 
-   d.r = lerp(d.r, d.sbr.lw+d.sbr.lw*pdead*2, .3)
+   d.r = lerp(d.r, d.mr+d.mr*pdead*2, .3)
 
    if d.t > d.deadt then 
     del(d.sbr.sparks, d)
