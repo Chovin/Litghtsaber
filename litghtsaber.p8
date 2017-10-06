@@ -354,8 +354,8 @@ function init_saber(c)
    dy=-rnd(2)-1,
    t=0,
    deadt=rnd(90)+15,
-   mr=rnd(s.lw/2)+s.lw/2,
-   r=s.lw,
+   mr=rnd(s.lw/4)+s.lw/4, -- try /3
+   r=s.lw,                  -- try /2
 
    vx=0,
    vy=0,
