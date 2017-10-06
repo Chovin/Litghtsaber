@@ -64,7 +64,7 @@ function _update()
   end
   mbcd = max(mbcd - 1, 0)
 
-  local ds = distance(mx,my,sbr.x,sbr.y)
+  local ds = distancee(mx,my,sbr.x,sbr.y)
   if (btn(4) or mb==1) then
    local dx = mx - sbr.x
    local dy = my - sbr.y
@@ -285,8 +285,8 @@ function init_saber(c)
      if p.vy+tns > o.vy and p.vy-tns < o.vy and
         p.vx+tns > o.vx and p.vx-tns < o.vx and
         p.z+tns > o.z and p.z-tns < o.z then
-      local ds = distance3d(p.vx, p.vy, p.z/2,
-                               o.vx, o.vy, o.z/2)
+      local ds = distance3de(p.vx, p.vy, p.z/2,
+                                o.vx, o.vy, o.z/2)
       --ds /= tns*1000
       -- have d.ax factor into calc
       -- for more spinny effect
@@ -480,6 +480,16 @@ function distance3d(x1,y1,z1,x2,y2,z2)
   m = max(dx, dz)/d
  end
  return sqrt(n*n+m*m+1) * d
+end
+
+function distance3de(x1,y1,z1,x2,y2,z2)
+  return distancee(0,z1,distancee(x1,y1,x2,y2),z2)
+end
+
+function distancee(x1,y1,x2,y2)
+  local dx = abs(x2-x1)
+  local dy = abs(y2-y1)
+  return dx+dy-0.585786*min(dx,dy)
 end
 
 function distance(x1,y1,x2,y2)
