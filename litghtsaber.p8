@@ -483,7 +483,11 @@ function distance3d(x1,y1,z1,x2,y2,z2)
 end
 
 function distance3de(x1,y1,z1,x2,y2,z2)
-  return distancee(0,z1,distancee(x1,y1,x2,y2),z2)
+  local dx = abs(x2-x1)
+  local dy = abs(y2-y1)
+  local dz = abs(z2-z1)
+  local dxy = dx+dy-0.585786*min(dx,dy)
+  return dxy+dz-0.585786*min(dxy,dz)
 end
 
 function distancee(x1,y1,x2,y2)
