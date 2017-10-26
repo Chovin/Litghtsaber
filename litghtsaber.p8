@@ -259,6 +259,14 @@ function _draw()
  end
 
 
+ -- sort by z
+ for i=1, #enemies do
+ 	local j=i
+ 	while j > 1 and enemies[j-1].z < enemies[j].z do
+ 		enemies[j],enemies[j-1] = enemies[j-1],enemies[j]
+ 		j=j-1
+ 	end
+ end
 
  -- enemies in behind door
  for e in all(enemies) do 
