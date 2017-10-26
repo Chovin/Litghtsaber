@@ -254,7 +254,7 @@ function _draw()
 
 
  doorw = 17
- doorh = 29
+ doorh = 31
  if door_opened != 0 then
   rectfill(64-doorw/2, syr+4-doorh,
             64+doorw/2, syr+4, 0)
@@ -275,8 +275,7 @@ function _draw()
  	if(e.behind_door)e.draw(e)
  end
 
- doorw = 17
- doorh = 29
+
  if door_t != 1 then
   rectfill(64-doorw/2, syr+4-doorh+doorh*(1-door_opened),
             64+doorw/2, syr+4-doorh, 7)
@@ -320,26 +319,25 @@ end
 
 -- enemies
 function spawn_enemy(door)
-	local w=16
-	local h=32
+	local w=19
+	local h=34
 	local x=64
-	local y=64
 	local dx = 0
 	local dz = 0
 	local behind_door = false
 	if door == 0 then 
-		x=24 - w/2
-		z=1.26
-		dx = .5 + rnd(1.5)
+		x=24 -- - w/2
+		z=.96
+		dx = .3 + rnd(1.3)
 	elseif door == 1 then
 		x=62+rnd(4)
-		z=1.5
-		dz = -.01 - rnd(.005)
+		z=1.58
+		dz = -.015 - rnd(.0035)
 		behind_door = true
 	elseif door == 2 then 
-		x=127-(24 - w/2)
-		z=1.26
-		dx = -(.5 + rnd(1.5))
+		x=127-24 -- + w/2)
+		z=.96
+		dx = -(.3 + rnd(1.3))
 	else
 		while true do
 			print(door,64,64,8)
@@ -352,6 +350,9 @@ function spawn_enemy(door)
 		w=w, h=h,
 		x=x, z=z,
 		dx=dx, dz=dz,
+		shead=.5,
+		storso=.6,
+		slegs=.6,
 		stopt=15+flr(rnd(10)),
 		behind_door=behind_door,
 		update=function(e)
@@ -360,10 +361,10 @@ function spawn_enemy(door)
 			e.z += e.dz
 			if e.t==e.stopt then 
 				if e.dz == 0 then
-					e.dz = rnd(.075) - .0375
+					e.dz = rnd(.08) - .05
 				else 
-					e.dx = rnd(5)-2.5
-					e.dz -= rnd(.001)
+					e.dx = rnd(4)-2
+					e.dz -= rnd(.008)
 				end
 			end
 			if(e.behind_door and door_opened > .9)e.behind_door=false
@@ -372,14 +373,66 @@ function spawn_enemy(door)
 				e.dz *= .9
 				if(abs(e.dx)<.005)e.dx=0
 				if(abs(e.dz)<.001)e.dz=0
-				e.z = min(1.48,e.z)
+				e.z = min(1.4,e.z)
 			end
 		end,
 		draw=function(e)
-			local sy = ((127-wally-e.h/2)-64)/e.z + 64
-			local sx = (e.x-64)/e.z + 64
-			circfill(sx,sy,(e.x+e.w/2-64)/e.z + 64 - sx,e.behind_door and 1 or 5)
-			circ(sx,sy,(e.x+e.w/2-64)/e.z + 64 - sx,e.behind_door and 2 or 8)
+			local hw = 19 * e.shead
+			local hh = 20 * e.shead
+			local sy = ((127-wally-e.h)-64)/e.z + 64
+			local sx = (e.x-64-hw/2)/e.z + 64
+--[[			circfill(sx,sy,(e.x+hw/2-64)/e.z + 64 - sx,e.behind_door and 1 or 5)
+			circ(sx,sy,(e.x+hw/2-64)/e.z + 64 - sx,e.behind_door and 2 or 8)--]]
+			if(e.behind_door)pal(7,6)
+			pal(3,0)
+
+			local tw = 31 * e.storso
+			local th = 29 * e.storso
+			local tsy = ((127-wally-e.h + hw*.9)-64)/e.z + 64
+			local tsx = (e.x-64-tw/2)/e.z + 64
+
+			-- legs
+			local lw = 9 * e.slegs
+			local lh = 39 * e.slegs
+			local lsy = ((127-wally-e.h + hw*.9 + th*.82)-64)/e.z + 64
+			local lsx = (e.x-64 - lw -1)/e.z + 64
+			sspr(98,0,
+								9, 39,
+								lsx, lsy,
+								lw/e.z,
+								((127-wally-e.h+hw*.9 + th*.8+lh)-64)/e.z + 64 - lsy)
+			lsx = (e.x-64 + 2)/e.z + 64
+			sspr(98,0,
+								9, 39,
+								lsx, lsy,
+								lw/e.z,
+								((127-wally-e.h+hw*.9 + th*.8+lh)-64)/e.z + 64 - lsy,
+								true)
+			-- torso
+			sspr(66,0,
+								31, 29,
+								tsx, tsy,
+								(e.x+tw/2-64)/e.z + 64 - tsx,
+								((127-wally-e.h+hh+th)-64)/e.z + 64 - tsy)
+			-- head
+			sspr(46,0,
+								19,20,
+								sx, sy,
+								(e.x+hw/2-64)/e.z + 64 - sx,
+								((127-wally-e.h+hh)-64)/e.z + 64 - sy)
+			-- arms
+			local aw = 27
+			local ah = 11
+			local asy = ((127-wally-e.h + hw*.9 + th*.15)-64)/e.z + 64
+			local asx = (e.x-64-(tw*.9)/2)/e.z + 64
+			sspr(24,32,
+								27,11,
+								asx, asy,
+								(tw*.9)/e.z,
+								(ah*.9)/e.z)
+
+			pal(3,3)
+			pal(7,7)
 
 		end
 	}add(enemies, e)
