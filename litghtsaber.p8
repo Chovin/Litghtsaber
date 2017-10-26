@@ -46,6 +46,8 @@ function _init()
  rott = 0
  rdir = 0
  pdir = ''
+ cpu_usage = stat(1)
+
  -- map n stuff
  door_t=1
  door_opened=0
@@ -300,6 +302,7 @@ function _draw()
  else
   print('|',0,0)
  end
+ cpu_usage = stat(1)
  --sbr2.draw(sbr2)
  -- print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
  -- print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
@@ -448,7 +451,8 @@ function init_saber(c)
    s.sy = 0
   end
 
-  if s.on and rnd(100)<80 and #s.sparks < 35 then
+  if s.on and rnd(100)<80 and #s.sparks < 35 
+  			and cpu_usage < .85 then -- don't add more sparks if maxed cpu
    add(s.sparks, s.spark(s))
   end
   for p in all(s.sparks) do 
