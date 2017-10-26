@@ -46,6 +46,14 @@ function _init()
  rott = 0
  rdir = 0
  pdir = ''
+ previous_angle=sbr.a
+ avg_mvs = {}
+ avg_mv = 0
+ avg_i = 1
+
+ moved = false
+ moved_t = 0
+
  cpu_usage = stat(1)
 
  -- map n stuff
@@ -80,49 +88,35 @@ function _update()
   mbcd = max(mbcd - 1, 0)
 
   local ds = distancee(mx,my,sbr.x,sbr.y)
+  local dx = mx - sbr.x
+  local dy = my - sbr.y
+  local a = atan2(dx, dy) + .75
+
   if (btn(4) or mb==1) then
-   local dx = mx - sbr.x
-   local dy = my - sbr.y
-   change_dir = false
-   -- debug
-   if rotating and 
-      ((abs(dy)<3 and abs(dx)<3) or
-       (pdir=='y' and abs(dy) > abs(dx)) or 
-       (pdir=='x' and abs(dx) > abs(dy))
-      ) then
-    if rdir > 0 then
-
-    else
-
-    end
-   elseif abs(dy) > abs(dx) then 
-    pdir = 'y'
-    if sbr.a > .5 then
-     rdir = -sgn(dy)
-    else 
-     rdir = sgn(dy)
-    end
-   else 
-    pdir = 'x'
-    if sbr.a < .25 or sbr.a > .75 then 
-     rdir = -sgn(dx)
-    else 
-     rdir = sgn(dx)
-    end
-   end
-   rotating = true
-   if rott==0 then
-    sfx(flr(rnd(3)+3))
-   end
-   rott += 1
-  else 
-   rotating = false
-   rott = 0
-   rdir = 0
+   a += .5
+  end
+  a %= 1
+  if abs(a+1 - sbr.a) < abs(a-sbr.a) then
+  	a += 1
+  elseif abs(a-1 - sbr.a) < abs(a-sbr.a) then
+  	a -= 1
   end
 
-  sbr.da = lerp(sbr.da, rdir*.05*(ds/10), .5)
+  if ds > 10  and moved_t > 10 and sbr.on then
+   sfx(flr(3 + rnd(3)))
+   moved = true
+   moved_t = 0
+  else
+   moved = false
+   moved_t += 1
+  end
+
+
+  if ds > .5 then 
+  	sbr.a = lerp(sbr.a, a, .1)
+  end
   
+  --da = abs()
 
   sbr.x = lerp(sbr.x, mx, .9)
   sbr.y = lerp(sbr.y, my, .9)
