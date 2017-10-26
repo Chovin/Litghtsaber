@@ -145,14 +145,14 @@ function _draw()
  local sy = 40
  local sxr = 64+sx-16
  local syr = 64+sx-16
- for y=127-sy,140 do
-  rectfill(sx-(y-(127-sy))*.9+11,y-1,
-            127-(sx-(y-(127-sy))*.9+11),y-1,0)
+ for y=127-sy,140 do -- floor
+  rectfill(sx-(y-(127-sy))*.9+15,y-1,
+            127-(sx-(y-(127-sy))*.9+15),y-1,0)
  end
  local corx1 = 24
- local corx2 = 34
- rectfill(corx1,100,corx2,97,0) -- left corridoor
- rectfill(127-corx1,100,127-corx2,97,0) -- right corridoor
+ local corx2 = 38
+ rectfill(corx1,100,corx2,96,0) -- left corridoor
+ rectfill(127-corx1,100,127-corx2,96,0) -- right corridoor
  pal(3,0)
 
  doorw = 17
