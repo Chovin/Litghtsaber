@@ -138,7 +138,91 @@ function _update()
 end
 
 function _draw()
- cls()
+ cls(7)
+ --draw map
+ local posts = 5
+ local sx = 32
+ local sy = 40
+ local sxr = 64+sx-16
+ local syr = 64+sx-16
+ for y=127-sy,140 do
+  rectfill(sx-(y-(127-sy))*.9+11,y-1,
+            127-(sx-(y-(127-sy))*.9+11),y-1,0)
+ end
+ pal(3,0)
+ for z=0, 1.5, 1/(posts*3) do 
+  local px = (sx-64)/z + 64
+  local py = (sy-64)/z + 64
+  local pxr = (sxr-64)/z + 64
+  local pyr = (syr-64)/z + 64
+  local pxw = (sx+16)/z - sx/z
+  local pyw = (sy+16)/z - sy/z
+  local pxwr = (sxr+16)/z - sxr/z
+  local pywr = (syr+16)/z - syr/z
+
+  if z%(1/posts) == 0 then
+   sspr(24,0, --left
+         16,16,
+         px,py,
+         pxw,pyw)
+
+   sspr(24,0, --right
+         16,16,
+         pxr,py,
+         pxwr,pyw,
+         true)
+
+   sspr(24,16, --left
+         16,16,
+         px,pyr,
+         pxw,pywr)
+
+   sspr(24,16, --right
+         16,16,
+         pxr,pyr,
+         pxwr,pywr,
+         true)
+  else
+   sspr(43,0, --left
+         3,16,
+         px,-8/z + 64,
+         (px+3)/z - px/z,8/z - -8/z)
+   sspr(43,0, --left
+         3,16,
+         (127-px)-1,-8/z + 64,
+         ((127-px)+3)/z - (127-px)/z,8/z - -8/z,
+         true)
+   if z%(1/posts)>.5/posts then
+    sspr(43,0, --left
+      3,16,
+      px,10/z + 64,
+      (px+2.5)/z - px/z,18/z - 10/z)
+    local fr = z%(2/posts)>1/posts and 3 or 0
+    sspr(40+fr,0, --left
+      3,16,
+      (127-px)+1,10/z + 64,
+      ((127-px)-2)/z - (127-px)/z,18/z - 10/z)
+   end 
+  end
+
+
+--[[1  0. 0. 0
+0. 1. 0. 0
+0. 0. -f/(f-n) -1
+0  0. -(f*n)/(f-n)  0
+
+
+x y z 1
+
+w = z*-1
+x = x*(1/tan((fov/2)*(1/180)) / -z
+y = y*(1/tan((fov/2)*(1/180)) / -z--]]
+--z = z*(-f/(f-n)) -(f*n)/(f-n) / -z
+
+
+ end
+ pal(3,3)
+
  sbr.draw(sbr)
  if across then
   print('-',0,0)
