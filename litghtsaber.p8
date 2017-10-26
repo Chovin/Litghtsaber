@@ -46,6 +46,11 @@ function _init()
  rott = 0
  rdir = 0
  pdir = ''
+ -- map n stuff
+ door_t=1
+ door_opened=0
+
+
 end
 
 function _update()
@@ -135,6 +140,10 @@ function _update()
 
  --sbr2.update(sbr2)
  sbr.update(sbr)
+
+
+ if(btnp(5))open_door()
+ update_door()
 end
 
 function _draw()
@@ -157,7 +166,6 @@ function _draw()
 
  doorw = 17
  doorh = 29
- door_opened = max(0,sin(t))
  if door_opened != 0 then
   rectfill(64-doorw/2, syr+4-doorh*door_opened,
             64+doorw/2, syr+4, 0)
@@ -257,6 +265,16 @@ y = y*(1/tan((fov/2)*(1/180)) / -z--]]
  --sbr2.draw(sbr2)
  -- print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
  -- print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
+end
+
+-- door
+function update_door()
+	door_t = min(door_t + .015, 1)
+	door_opened = -min(sin(door_t), 0)
+end
+
+function open_door()
+	door_t = 0
 end
 
 -- x, y, button
