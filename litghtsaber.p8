@@ -161,6 +161,7 @@ function _update()
  lin_sqrt_spawn = .8 + min(sqrt(st), st/10)
  if rnd(100) < lin_sqrt_spawn and spawn_cooldown==0 then
  	local spawn_door = flr(rnd(3)) -- random door
+ 	if(spawn_door == 1)open_door()
  	local times = (spawn_fast and rnd(100) < 5) and 1 or max(rnd(sqrt(sqrt(st))),1)
  	for i=1, times do
  		spawn_enemy(spawn_door) 
@@ -249,16 +250,26 @@ function _draw()
  end
  pal(3,3)
 
- -- enemies in front of door
- for e in all(enemies) do 
- 	if(e.z<1.46)e.draw(e)
- end
 
  doorw = 17
  doorh = 29
  if door_opened != 0 then
-  rectfill(64-doorw/2, syr+4-doorh*door_opened,
+  rectfill(64-doorw/2, syr+4-doorh,
             64+doorw/2, syr+4, 0)
+ end
+
+
+
+ -- enemies in behind door
+ for e in all(enemies) do 
+ 	if(e.behind_door)e.draw(e)
+ end
+
+ doorw = 17
+ doorh = 29
+ if door_t != 1 then
+  rectfill(64-doorw/2, syr+4-doorh+doorh*(1-door_opened),
+            64+doorw/2, syr+4-doorh, 7)
  end
  -- door edges
  rectfill(64-doorw/2, syr+4, -- left
@@ -272,7 +283,7 @@ function _draw()
 
  -- enemies
  for e in all(enemies) do 
- 	if(e.z>=1.46)e.draw(e)
+ 	if(not e.behind_door)e.draw(e)
  end
 
  sbr.draw(sbr)
@@ -304,6 +315,7 @@ function spawn_enemy(door)
 	local y=64
 	local dx = 0
 	local dz = 0
+	local behind_door = false
 	if door == 0 then 
 		x=24 - w/2
 		z=1.26
@@ -312,6 +324,7 @@ function spawn_enemy(door)
 		x=62+rnd(4)
 		z=1.5
 		dz = -.01
+		behind_door = true
 	elseif door == 2 then 
 		x=127-(24 - w/2)
 		z=1.26
@@ -329,6 +342,7 @@ function spawn_enemy(door)
 		x=x, z=z,
 		dx=dx, dz=dz,
 		stopt=15+rnd(10),
+		behind_door=behind_door,
 		update=function(e)
 			e.t+=1
 			e.x += e.dx
@@ -340,6 +354,7 @@ function spawn_enemy(door)
 					e.dx = rnd(2)-1
 				end
 			end
+			if(e.behind_door and door_opened > .9)e.behind_door=false
 			if e.t>e.stopt then 
 				e.dx *= .9
 				e.dz *= .95
@@ -350,7 +365,9 @@ function spawn_enemy(door)
 		draw=function(e)
 			local sy = ((127-wally-e.h/2)-64)/e.z + 64
 			local sx = (e.x-64)/e.z + 64
-			circ(sx,sy,(e.x+e.w-64)/e.z + 64 - sx,5)
+			circfill(sx,sy,(e.x+e.w/2-64)/e.z + 64 - sx,e.behind_door and 1 or 5)
+			circ(sx,sy,(e.x+e.w/2-64)/e.z + 64 - sx,e.behind_door and 2 or 8)
+
 		end
 	}add(enemies, e)
 	return e
