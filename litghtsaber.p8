@@ -49,7 +49,14 @@ function _init()
  -- map n stuff
  door_t=1
  door_opened=0
+ posts = 5
+ wallx = 32
+ wally = 40
 
+ enemies = {}
+ max_spawn_cooldown = 30
+ spawn_cooldown = 0
+ bullets = {}
 
 end
 
@@ -144,14 +151,34 @@ function _update()
 
  if(btnp(5))open_door()
  update_door()
+
+
+ -- enemies
+ spawn_cooldown = max(0,spawn_cooldown-1)
+
+ spawn_fast = t%128 > 96  -- 1 - 2 minutes every 3 - 6 minutes
+ local st = t/5
+ lin_sqrt_spawn = .8 + min(sqrt(st), st/10)
+ if rnd(100) < lin_sqrt_spawn and spawn_cooldown==0 then
+ 	local spawn_door = flr(rnd(3)) -- random door
+ 	local times = (spawn_fast and rnd(100) < 5) and 1 or max(rnd(sqrt(sqrt(st))),1)
+ 	for i=1, times do
+ 		spawn_enemy(spawn_door) 
+ 	end
+ 	spawn_cooldown = max_spawn_cooldown
+ 	max_spawn_cooldown -= 1
+ end
+
+ for e in all(enemies) do 
+ 	e.update(e)
+ end
 end
 
 function _draw()
  cls(7)
  --draw map
- local posts = 5
- local sx = 32
- local sy = 40
+ local sx = wallx
+ local sy = wally
  local sxr = 64+sx-16
  local syr = 64+sx-16
  for y=127-sy,140 do -- floor
@@ -163,24 +190,6 @@ function _draw()
  rectfill(corx1,100,corx2,96,0) -- left corridoor
  rectfill(127-corx1,100,127-corx2,96,0) -- right corridoor
  pal(3,0)
-
- doorw = 17
- doorh = 29
- if door_opened != 0 then
-  rectfill(64-doorw/2, syr+4-doorh*door_opened,
-            64+doorw/2, syr+4, 0)
- end
- -- door edges
- rectfill(64-doorw/2, syr+4, -- left
-           64-doorw/2, syr+4-doorh,5)
- rectfill(64+doorw/2, syr+4, -- right
-           64+doorw/2, syr+4-doorh,5)
- -- rectfill(64-doorw/2, syr+4, -- bottom
- --           64+doorw/2, syr+4,5)
- rectfill(64-doorw/2, syr+4-doorh, -- top
-           64+doorw/2, syr+4-doorh,5)
-
-
  for z=0, 1.5, 1/(posts*3) do 
   local px = (sx-64)/z + 64
   local py = (sy-64)/z + 64
@@ -237,24 +246,34 @@ function _draw()
     end 
    end
   end
-
-
---[[1  0. 0. 0
-0. 1. 0. 0
-0. 0. -f/(f-n) -1
-0  0. -(f*n)/(f-n)  0
-
-
-x y z 1
-
-w = z*-1
-x = x*(1/tan((fov/2)*(1/180)) / -z
-y = y*(1/tan((fov/2)*(1/180)) / -z--]]
---z = z*(-f/(f-n)) -(f*n)/(f-n) / -z
-
-
  end
  pal(3,3)
+
+ -- enemies in front of door
+ for e in all(enemies) do 
+ 	if(e.z<1.46)e.draw(e)
+ end
+
+ doorw = 17
+ doorh = 29
+ if door_opened != 0 then
+  rectfill(64-doorw/2, syr+4-doorh*door_opened,
+            64+doorw/2, syr+4, 0)
+ end
+ -- door edges
+ rectfill(64-doorw/2, syr+4, -- left
+           64-doorw/2, syr+4-doorh,5)
+ rectfill(64+doorw/2, syr+4, -- right
+           64+doorw/2, syr+4-doorh,5)
+ -- rectfill(64-doorw/2, syr+4, -- bottom
+ --           64+doorw/2, syr+4,5)
+ rectfill(64-doorw/2, syr+4-doorh, -- top
+           64+doorw/2, syr+4-doorh,5)
+
+ -- enemies
+ for e in all(enemies) do 
+ 	if(e.z>=1.46)e.draw(e)
+ end
 
  sbr.draw(sbr)
  if across then
@@ -275,6 +294,66 @@ end
 
 function open_door()
 	door_t = 0
+end
+
+-- enemies
+function spawn_enemy(door)
+	local w=16
+	local h=32
+	local x=64
+	local y=64
+	local dx = 0
+	local dz = 0
+	if door == 0 then 
+		x=24 - w/2
+		z=1.26
+		dx = .5 + rnd(2)
+	elseif door == 1 then
+		x=62+rnd(4)
+		z=1.5
+		dz = -.01
+	elseif door == 2 then 
+		x=127-(24 - w/2)
+		z=1.26
+		dx = -(.5 + rnd(2))
+	else
+		while true do
+			print(door,64,64,8)
+			flip()
+		end
+	end
+
+	local e = {
+		t=0,
+		w=w, h=h,
+		x=x, z=z,
+		dx=dx, dz=dz,
+		stopt=15+rnd(10),
+		update=function(e)
+			e.t+=1
+			e.x += e.dx
+			e.z += e.dz
+			if e.t==e.stopt then 
+				if e.dz == 0 then
+					e.dz = rnd(.1) - .05
+				else 
+					e.dx = rnd(2)-1
+				end
+			end
+			if e.t>e.stopt then 
+				e.dx *= .9
+				e.dz *= .95
+				if(e.dx<.005)e.dx=0
+				if(e.dz<.00001)e.dz=0
+			end
+		end,
+		draw=function(e)
+			local sy = ((127-wally-e.h/2)-64)/e.z + 64
+			local sx = (e.x-64)/e.z + 64
+			circ(sx,sy,(e.x+e.w-64)/e.z + 64 - sx,5)
+		end
+	}add(enemies, e)
+	return e
 end
 
 -- x, y, button
