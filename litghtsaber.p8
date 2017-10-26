@@ -327,16 +327,16 @@ function spawn_enemy(door)
 	if door == 0 then 
 		x=24 - w/2
 		z=1.26
-		dx = .5 + rnd(2)
+		dx = .5 + rnd(1.5)
 	elseif door == 1 then
 		x=62+rnd(4)
 		z=1.5
-		dz = -.01
+		dz = -.01 - rnd(.005)
 		behind_door = true
 	elseif door == 2 then 
 		x=127-(24 - w/2)
 		z=1.26
-		dx = -(.5 + rnd(2))
+		dx = -(.5 + rnd(1.5))
 	else
 		while true do
 			print(door,64,64,8)
@@ -349,7 +349,7 @@ function spawn_enemy(door)
 		w=w, h=h,
 		x=x, z=z,
 		dx=dx, dz=dz,
-		stopt=15+rnd(10),
+		stopt=15+flr(rnd(10)),
 		behind_door=behind_door,
 		update=function(e)
 			e.t+=1
@@ -357,17 +357,19 @@ function spawn_enemy(door)
 			e.z += e.dz
 			if e.t==e.stopt then 
 				if e.dz == 0 then
-					e.dz = rnd(.1) - .05
+					e.dz = rnd(.075) - .0375
 				else 
-					e.dx = rnd(2)-1
+					e.dx = rnd(5)-2.5
+					e.dz -= rnd(.001)
 				end
 			end
 			if(e.behind_door and door_opened > .9)e.behind_door=false
 			if e.t>e.stopt then 
 				e.dx *= .9
-				e.dz *= .95
-				if(e.dx<.005)e.dx=0
-				if(e.dz<.00001)e.dz=0
+				e.dz *= .9
+				if(abs(e.dx)<.005)e.dx=0
+				if(abs(e.dz)<.001)e.dz=0
+				e.z = min(1.48,e.z)
 			end
 		end,
 		draw=function(e)
