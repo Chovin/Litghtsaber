@@ -154,6 +154,25 @@ function _draw()
  rectfill(corx1,100,corx2,97,0) -- left corridoor
  rectfill(127-corx1,100,127-corx2,97,0) -- right corridoor
  pal(3,0)
+
+ doorw = 17
+ doorh = 29
+ door_opened = max(0,sin(t))
+ if door_opened != 0 then
+  rectfill(64-doorw/2, syr+4-doorh*door_opened,
+            64+doorw/2, syr+4, 0)
+ end
+ -- door edges
+ rectfill(64-doorw/2, syr+4, -- left
+           64-doorw/2, syr+4-doorh,5)
+ rectfill(64+doorw/2, syr+4, -- right
+           64+doorw/2, syr+4-doorh,5)
+ -- rectfill(64-doorw/2, syr+4, -- bottom
+ --           64+doorw/2, syr+4,5)
+ rectfill(64-doorw/2, syr+4-doorh, -- top
+           64+doorw/2, syr+4-doorh,5)
+
+
  for z=0, 1.5, 1/(posts*3) do 
   local px = (sx-64)/z + 64
   local py = (sy-64)/z + 64
