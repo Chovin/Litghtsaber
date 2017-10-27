@@ -383,10 +383,20 @@ function spawn_enemy(door)
 		fcd=80 + rnd(40) - rnd(t/2) + 20,
 		stopt=15+flr(rnd(10)),
 		behind_door=behind_door,
+		hurting=0,
 		update=function(e)
 			e.t+=1
 			e.x += e.dx
 			e.z += e.dz
+			if e.hurting==1 then
+				e.dz += .005
+			end
+			if e.hurting>0 then
+				e.hurting += 1
+				if e.hurting > 5 then
+					del(enemies, e)
+				end
+			end
 			if e.t==e.stopt then 
 				if e.dz == 0 then
 					e.dz = rnd(.08) - .05
@@ -417,6 +427,13 @@ function spawn_enemy(door)
 --[[			circfill(sx,sy,(e.x+hw/2-64)/e.z + 64 - sx,e.behind_door and 1 or 5)
 			circ(sx,sy,(e.x+hw/2-64)/e.z + 64 - sx,e.behind_door and 2 or 8)--]]
 			if(e.behind_door)pal(7,6)
+			if e.hurting > 0 then
+				if e.hurting%2==0 then
+					all_to_color(7)
+				else 
+					all_to_color(0)
+				end
+			end
 			pal(3,0)
 
 			local tw = 31 * e.storso
@@ -464,26 +481,100 @@ function spawn_enemy(door)
 								(tw*.9)/e.z,
 								(ah*.9)/e.z)
 
-			pal(3,3)
-			pal(7,7)
+			--[[pal(3,3)
+			pal(7,7)--]]
+			all_to_color()
 
 		end,
 		shoot=function(e)
 			local b = {
+					t=0,
 					source=e,
 					x=e.x - 27*.05,
 					y=(127-wally-e.h+ 20*e.shead*.855 + 11*.9 * .6),
 					z=e.z-.0005,
 					r=1.4,spd=1,
+					deflected=false,
+					hit_enemy=false,
 					update=function(b)
+						b.t += 1
 						b.x += b.dx
 						b.y += b.dy
 						b.z += b.dz
-      if b.z < .25 then -- hit distance
-       
-      elseif b.z < .15 then -- missed
-       local sx = (b.x-64)/b.z + 64
-       local sy = (b.y-64)/b.z + 64
+						local sx = (b.x-64)/b.z + 64
+      local sy = (b.y-64)/b.z + 64
+      local chw = b.r/b.z -- bullet hw
+      if b.deflected then
+      	if b.hit_enemy and b.z > b.hit_enemy.z then
+      		b.hit_enemy.hurt(b.hit_enemy)
+      		del(bullets,b)
+      	end
+      	if sx < -chw or sx > 127+chw or 
+      				sy < -chw or sy > 127+chw then
+      		del(bullets,b)
+      	end
+      	return -- no need to hit check
+      end
+
+      -- hit checks
+      if b.z < .35 then -- hit distance
+      	-- transform to saber space
+      	-- translate
+      	local osbx = sx-(sbr.x+sbr.sx)
+      	local osby = sy-(sbr.y+sbr.sy)
+      	-- unrotate
+       local c = cos(-sbr.a+.25)
+       local s = sin(-sbr.a+.25)
+      	sby = c*osbx - osby*s
+      	sbx = s*osbx + osby*c
+        printh(sbx..'|'..sby)
+        --while not btnp(z) do flip() end
+      	-- box-box collision
+      	local sbrlen = sbr.out*sbr.lh
+      	local by = -(sbr.loh - sbr.lw/4) -- hilt obscures blade slightly
+      	local ty = -(sbr.loh + sbrlen + sbr.lw/3) -- rounded, so smaller hitbox
+      	local lx = -sbr.lw/2
+      	local rx = sbr.lw/2
+
+       while  btnp(0) do
+        rect(lx+64,by+64,rx+64,ty+54,8)
+        rectfill(sbx+chw+64,sby+chw+64,sbx-chw+64,sby-chw+64,11)
+        flip()
+       end
+
+      	if sby+chw < by and sby-chw > ty and -- collide!
+      				sbx+chw > lx and sbx-chw < rx then
+      		b.deflected = true
+      		b.t = 0
+      		if rnd(100) < 80 then -- most of the time hit enemy
+      			b.hit_enemy = b.source
+      			if rnd(100)<50 then -- sometimes hit his buddy
+      				local which = 0 -- most of these times, hit the closest
+      				if rnd(100)<20 and #enemies > 1 then
+      					which = 1
+      				end
+      				b.hit_enemy = enemies[#enemies - which]
+      			end
+      			-- go toward enemy
+      			local destx = b.hit_enemy.x + rnd(19*b.hit_enemy.shead/4) - 19*b.hit_enemy.shead/8 + b.hit_enemy.dx*2
+      			local desty = 127-wally-b.hit_enemy.h*.5 + rnd(b.hit_enemy.h*.4)
+      			local destz = b.hit_enemy.z + b.hit_enemy.dz*2
+      			destz = (destz-.25)*64
+      			local dist = distance3de(b.x,b.y,(b.z-.25)*64,destx,desty,destz)
+									b.dx = (destx - b.x)/dist * b.spd*4
+									b.dy = (desty - b.y)/dist * b.spd*4
+									b.dz = ((destz - b.z)/dist * b.spd*4)/64
+         printh(b.dz)
+      		else
+      			-- deflect outward (cause not hitting enemy)
+      			local a = rnd(1)
+      			b.dx = sin(a) * b.spd*1.9
+      			b.dy = cos(a) * b.spd*1.9
+      			b.dz = sgn(rnd(1)-.5)*b.dz*rnd(.6)
+      		end
+      	end
+						end
+      if b.z < .15 then -- missed
        if sx > 0 and sx < 127 and 
           sy > 0 and sy < 127 then
 						 hurt()
@@ -497,6 +588,14 @@ function spawn_enemy(door)
 						local oz = b.z-b.dz
       local ox = ((b.x-b.dx)-64)/oz + 64
       local oy = ((b.y-b.dy)-64)/oz + 64
+      -- muzzle flash
+      if b.t == 1 or b.t == 3 then 
+      	circfill(px, py, b.r/b.z*1.8, 7+b.t-1)
+      	rectfill(px-(b.r*2)/b.z, py+b.r/4,
+      										px+(b.r*2)/b.z, py-b.r/4, 7)
+      end
+      if (b.t == 1) circfill(ox, oy, b.r/b.z*1.6, 8)
+      if (b.t == 2) circfill(ox, oy, b.r/b.z*1.7, 5)
 						circfill(ox, oy, b.r/oz, 8)
 						circfill(px, py, b.r/b.z, 8)
        --print(b.z, ox, oy, 3)
@@ -518,6 +617,9 @@ function spawn_enemy(door)
 
 
 				add(bullets, b)
+		end,
+		hurt=function(e)
+			e.hurting += 1
 		end
 	}add(enemies, e)
 	return e
@@ -802,6 +904,18 @@ function init_saber(c)
  end
 
  return s
+end
+
+
+-- from trasevoldog
+function all_to_color(c)
+ for i=0,15 do
+  if c then
+   pal(i,c)
+  else
+   pal(i)
+  end
+ end
 end
 
 --[[
