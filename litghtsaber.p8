@@ -142,13 +142,12 @@ function _update()
  -- if (pressed) sbr.toggle(sbr)
  -- shift key
  if (btnp(4,1)) sbr.toggle(sbr)
- if (btnp(5,1)) across = not across
+ --if (btnp(5,1)) across = not across
 
  --sbr2.update(sbr2)
  sbr.update(sbr)
 
 
- if(btnp(5))open_door()
  update_door()
 
 
