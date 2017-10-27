@@ -492,11 +492,11 @@ function spawn_enemy(door)
 						end
 					end,
 					draw=function(b)
-       local px = (b.x-64)/b.z + 64
-       local py = (b.y-64)/b.z + 64
+      local px = (b.x-64)/b.z + 64
+      local py = (b.y-64)/b.z + 64
 						local oz = b.z-b.dz
-       local ox = ((b.x-b.dx)-64)/oz + 64
-       local oy = ((b.y-b.dy)-64)/oz + 64
+      local ox = ((b.x-b.dx)-64)/oz + 64
+      local oy = ((b.y-b.dy)-64)/oz + 64
 						circfill(ox, oy, b.r/oz, 8)
 						circfill(px, py, b.r/b.z, 8)
        --print(b.z, ox, oy, 3)
