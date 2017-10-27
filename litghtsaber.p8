@@ -68,6 +68,9 @@ function _init()
  spawn_cooldown = 0
  bullets = {}
 
+ hurting = 0
+ life = 10
+
 end
 
 function _update()
@@ -169,9 +172,24 @@ function _update()
  for e in all(enemies) do 
  	e.update(e)
  end
+
+ -- bullets
+ for b in all(bullets) do 
+ 	b.update(b)
+ end
+
+ hurting = max(0, hurting-1)
 end
 
 function _draw()
+ if hurting > 11 then
+ 	clear_color = 14
+ 	if (hurting==15) clear_color = 7
+ 	if (hurting==14) clear_color = 8
+ 	if (hurting==13) clear_color = 0
+  return cls(clear_color)
+ end
+
  cls(7)
  --draw map
  local sx = wallx
@@ -289,6 +307,11 @@ function _draw()
  	if(not e.behind_door)e.draw(e)
  end
 
+ -- bullets
+ for b in all(bullets) do 
+ 	b.draw(b)
+ end
+
  sbr.draw(sbr)
  if across then
   print('-',0,0)
@@ -309,6 +332,16 @@ end
 
 function open_door()
 	door_t = 0
+end
+
+function hurt()
+	if hurting == 0 then 
+		hurting = 15
+		life -= 1
+		if life == 0 then 
+			game_over()
+		end
+	end
 end
 
 -- enemies
@@ -347,6 +380,8 @@ function spawn_enemy(door)
 		shead=.5,
 		storso=.6,
 		slegs=.6,
+		fire_cooldown=80 + rnd(40) - rnd(t/2),
+		fcd=80 + rnd(40) - rnd(t/2) + 20,
 		stopt=15+flr(rnd(10)),
 		behind_door=behind_door,
 		update=function(e)
@@ -368,6 +403,11 @@ function spawn_enemy(door)
 				if(abs(e.dx)<.005)e.dx=0
 				if(abs(e.dz)<.001)e.dz=0
 				e.z = min(1.4,e.z)
+			end
+			e.fcd-=1
+			if e.fcd <= 0 then 
+				e.fcd = e.fire_cooldown
+				e.shoot(e)
 			end
 		end,
 		draw=function(e)
@@ -428,6 +468,57 @@ function spawn_enemy(door)
 			pal(3,3)
 			pal(7,7)
 
+		end,
+		shoot=function(e)
+			local b = {
+					source=e,
+					x=e.x - 27*.05,
+					y=(127-wally-e.h+ 20*e.shead*.855 + 11*.9 * .6),
+					z=e.z-.0005,
+					r=1.4,spd=1,
+					update=function(b)
+						b.x += b.dx
+						b.y += b.dy
+						b.z += b.dz
+       if b.z < .25 then -- hit distance
+        
+       elseif b.z < .15 then -- missed
+        local sx = (b.x-64)/b.z + 64
+        local sy = (b.y-64)/b.z + 64
+        if sx > 0 and sx < 127 and 
+           sy > 0 and sy < 127 then
+							 hurt()
+        end
+							del(bullets, b)
+						end
+					end,
+					draw=function(b)
+       local px = (b.x-64)/b.z + 64
+       local py = (b.y-64)/b.z + 64
+						local oz = b.z-b.dz
+       local ox = ((b.x-b.dx)-64)/oz + 64
+       local oy = ((b.y-b.dy)-64)/oz + 64
+						circfill(ox, oy, b.r/oz, 8)
+						circfill(px, py, b.r/b.z, 8)
+       --print(b.z, ox, oy, 3)
+					end
+				}
+				-- speed/dir
+				-- destination (somewhere on player's screen) at depth ~~.25~~ .15
+				local x = 30 + rnd(68)
+				local y = 30 + rnd(68)
+				-- don't forget to normalize z
+				-- .25 is the stopping point
+				local z = (.25-.25)*64
+				local dist = distance3de(b.x,b.y,(b.z-.25)*64,x,y,z)
+				-- normalize and speed
+				b.dx = (x - b.x)/dist * b.spd
+				b.dy = (y - b.y)/dist * b.spd
+				b.dz = ((z - b.z)/dist * b.spd)
+
+
+
+				add(bullets, b)
 		end
 	}add(enemies, e)
 	return e
