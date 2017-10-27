@@ -479,15 +479,15 @@ function spawn_enemy(door)
 						b.x += b.dx
 						b.y += b.dy
 						b.z += b.dz
-       if b.z < .25 then -- hit distance
-        
-       elseif b.z < .15 then -- missed
-        local sx = (b.x-64)/b.z + 64
-        local sy = (b.y-64)/b.z + 64
-        if sx > 0 and sx < 127 and 
-           sy > 0 and sy < 127 then
-							 hurt()
-        end
+      if b.z < .25 then -- hit distance
+       
+      elseif b.z < .15 then -- missed
+       local sx = (b.x-64)/b.z + 64
+       local sy = (b.y-64)/b.z + 64
+       if sx > 0 and sx < 127 and 
+          sy > 0 and sy < 127 then
+						 hurt()
+       end
 							del(bullets, b)
 						end
 					end,
