@@ -422,25 +422,25 @@ function spawn_enemy(door)
 
 			local tw = 31 * e.storso
 			local th = 29 * e.storso
-			local tsy = ((127-wally-e.h + hw*.9)-64)/e.z + 64
+			local tsy = ((127-wally-e.h + hh*.855)-64)/e.z + 64
 			local tsx = (e.x-64-tw/2)/e.z + 64
 
 			-- legs
 			local lw = 9 * e.slegs
 			local lh = 39 * e.slegs
-			local lsy = ((127-wally-e.h + hw*.9 + th*.82)-64)/e.z + 64
+			local lsy = ((127-wally-e.h + hh*.855 + th*.82)-64)/e.z + 64
 			local lsx = (e.x-64 - lw -1)/e.z + 64
 			sspr(98,0,
 								9, 39,
 								lsx, lsy,
 								lw/e.z,
-								((127-wally-e.h+hw*.9 + th*.8+lh)-64)/e.z + 64 - lsy)
+								((127-wally-e.h+hh*.855 + th*.8+lh)-64)/e.z + 64 - lsy)
 			lsx = (e.x-64 + 2)/e.z + 64
 			sspr(98,0,
 								9, 39,
 								lsx, lsy,
 								lw/e.z,
-								((127-wally-e.h+hw*.9 + th*.8+lh)-64)/e.z + 64 - lsy,
+								((127-wally-e.h+hh*.855 + th*.8+lh)-64)/e.z + 64 - lsy,
 								true)
 			-- torso
 			sspr(66,0,
@@ -457,7 +457,7 @@ function spawn_enemy(door)
 			-- arms
 			local aw = 27
 			local ah = 11
-			local asy = ((127-wally-e.h + hw*.9 + th*.15)-64)/e.z + 64
+			local asy = ((127-wally-e.h + hh*.855 + th*.15)-64)/e.z + 64
 			local asx = (e.x-64-(tw*.9)/2)/e.z + 64
 			sspr(24,32,
 								27,11,
