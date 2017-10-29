@@ -71,9 +71,11 @@ function _init()
  hurting = 0
  life = 10
 
+ _update = game_update
+ _draw = game_draw
 end
 
-function _update()
+function game_update()
  t += .015
 
  -- if (btn(0)) sbr.x-=12
@@ -182,7 +184,7 @@ function _update()
  update_shake()
 end
 
-function _draw()
+function game_draw()
  camera(camx+shkx, camy+shky)
  if hurting > 11 then
  	clear_color = 14
@@ -316,9 +318,9 @@ function _draw()
 
  sbr.draw(sbr)
  if across then
-  print('-',0,0)
+  --print('-',0,0)
  else
-  print('|',0,0)
+  --print('|',0,0)
  end
  cpu_usage = stat(1)
  --sbr2.draw(sbr2)
@@ -367,11 +369,6 @@ function spawn_enemy(door)
 		x=127-24 -- + w/2)
 		z=.96
 		dx = -(.3 + rnd(1.3))
-	else
-		while true do
-			print(door,64,64,8)
-			flip()
-		end
 	end
 
 	local e = {
@@ -540,12 +537,6 @@ function spawn_enemy(door)
       	local ty = -(sbr.loh + sbrlen + sbr.lw/3) -- rounded, so smaller hitbox
       	local lx = -sbr.lw/2
       	local rx = sbr.lw/2
-
-       while  btnp(0) do
-        rect(lx+64,by+64,rx+64,ty+54,8)
-        rectfill(sbx+chw+64,sby+chw+64,sbx-chw+64,sby-chw+64,11)
-        flip()
-       end
 
       	if sby+chw < by and sby-chw > ty and -- collide!
       				sbx+chw > lx and sbx-chw < rx then
@@ -753,7 +744,7 @@ function init_saber(c)
 
   s.px = x
   s.py = y
-  print(stat(1),0,8)
+  --print(stat(1),0,12)
  end
 
  s.draw_back_sparks=function(s)
@@ -917,6 +908,36 @@ function init_saber(c)
 
  return s
 end
+
+function game_over()
+ _update = over_update
+ _draw   = over_draw
+ t = 0
+end
+
+function over_update()
+ mx, my, mb = mouse()
+ t += .015
+ if t > 10 and (mb == 1 or btnp(4)) then
+  _init()
+ end
+ if t < 1 then
+  game_update()
+ end
+ sbr.update(sbr)
+end
+
+function over_draw()
+ game_draw()
+ s = 'game over'
+ print(s, 64 - #s*2,62 - sin(t)*2+1, 0)
+ print(s, 64 - #s*2,62 - sin(t)*2, 8)
+ s = 'click mouse to restart'
+ print(s, 64 - #s*2,90, 12)
+ print(s, 64 - #s*2,90, 1)
+
+end
+
 
 
 -- from trasevoldog
