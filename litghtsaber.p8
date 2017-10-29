@@ -529,7 +529,7 @@ function spawn_enemy(door)
        local s = sin(-sbr.a+.25)
       	sby = c*osbx - osby*s
       	sbx = s*osbx + osby*c
-        printh(sbx..'|'..sby)
+        --printh(sbx..'|'..sby)
         --while not btnp(z) do flip() end
       	-- box-box collision
       	local sbrlen = sbr.out*sbr.lh
@@ -563,7 +563,7 @@ function spawn_enemy(door)
 									b.dx = (destx - b.x)/dist * b.spd*4
 									b.dy = (desty - b.y)/dist * b.spd*4
 									b.dz = ((destz - b.z)/dist * b.spd*4)/64
-         printh(b.dz)
+         --printh(b.dz)
       		else
       			-- deflect outward (cause not hitting enemy)
       			local a = rnd(1)
