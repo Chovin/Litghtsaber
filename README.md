@@ -8,3 +8,6 @@ Playable [on the bbs](https://www.lexaloffle.com/bbs/?tid=30137)
 
 ### ----- cart ------
 ![](litghtsaber.p8.png)
+
+
+\* DISCLAIMER: none of the objects, symbols, or characters portrayed are my own
