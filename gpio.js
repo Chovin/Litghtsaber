@@ -3,6 +3,15 @@
 // <script src="bower_components/osc.js/dist/osc-browser.min.js"></script>
 // <script src="gpio.js"></script>
 
+if (process.argv.length < 3) {
+    process.exit();
+}
+ip = process.argv[2];
+port = 6449
+if (process.argv.length > 3) {
+    port = process.argv[3];
+}
+
 var osc = require("osc"),
     express = require("express"),
     WebSocket = require("ws");
@@ -27,8 +36,8 @@ var getIPAddresses = function () {
 
 // Bind to a UDP socket to listen for incoming OSC events.
 var udpPort = new osc.UDPPort({
-    localAddress: "172.20.10.8",
-    localPort: 6449
+    localAddress: ip,
+    localPort: port
 });
 
 udpPort.on("ready", function () {
