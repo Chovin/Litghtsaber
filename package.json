@@ -1,0 +1,11 @@
+{
+    "name": "litghtsaber-gpio.p8",
+    "main": "gpio.js",
+    "description": "work please",
+    "license": "(MIT OR GPL-2.0)",
+    "dependencies": {
+        "osc": "2.2.0",
+        "express": "4.13.4",
+        "ws": "1.1.0"
+    }
+}

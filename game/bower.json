@@ -1,0 +1,7 @@
+{
+    "name": "litghtsaber-gpio",
+    "version": "litghtsaber-gpio",
+    "dependencies": {
+        "osc.js": "2.2.0"
+    }
+}
