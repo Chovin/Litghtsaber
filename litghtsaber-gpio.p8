@@ -52,6 +52,7 @@ function _init()
  avg_i = 1
  -- phone button pressed
  lit_pressed = 0
+ col_pressed = 0
 
  moved = false
  moved_t = 0
@@ -72,6 +73,9 @@ function _init()
 
  hurting = 0
  life = 10
+ gpio = {}
+ has_gpio = false
+ points = 0
 
  _update = game_update
  _draw = game_draw
@@ -85,7 +89,34 @@ function game_update()
  -- if (btn(2)) sbr.y-=12
  -- if (btn(3)) sbr.y+=12
 
- if mouse_control then 
+ gpio = {}
+ for i=0x5f80, 0x5fa0 do 
+  add(gpio, peek(i))
+ end
+ if (gpio[1] != 0) has_gpio = true
+
+
+ if has_gpio then -- iphone control
+  -- yaw
+  reverse = (gpio[6] * 2)-1
+  sbr.a = gpio[1]/255 * reverse
+  -- change color
+  -- gpio 6
+  if (btnp(5) or col_pressed != gpio[7]) then
+   sbrci = sbrci%#sbrcs + 1
+   sbr.c = sbrcs[sbrci]
+  end
+  col_pressed = gpio[7]
+  -- gpio accel z, y
+  sbr.dx += -((gpio[13]/255) * 12 - 6) * 2
+  sbr.dy += ((gpio[12]/255) * 12 - 6) * 2
+  sbr.dx *= .95
+  sbr.dy *= .95
+  sbr.x = mid(0,128, sbr.x+sbr.dx)
+  sbr.y = mid(0,128, sbr.y+sbr.dy)
+  sbr.x = ((sbr.x - 64) * .925 + 64)
+  sbr.y = ((sbr.y - 120) * .85 + 120)
+ elseif mouse_control then 
   mx, my, mb = mouse()
   local pressed = false
   if mb==1 and mbcd==0 then
@@ -118,15 +149,10 @@ function game_update()
    moved_t += 1
   end
 
-  gpio = {}
-  for i=0x5f80, 0x5f88 do 
-   add(gpio, peek(i))
-  end
 
-  sbr.a = gpio[1]/255
-  -- if ds > .5 then 
-  -- 	sbr.a = lerp(sbr.a, a, .1)
-  -- end
+  if ds > .5 then 
+  	sbr.a = lerp(sbr.a, a, .1)
+  end
   
   --da = abs()
 
@@ -137,7 +163,7 @@ function game_update()
    sbrci = sbrci%#sbrcs + 1
    sbr.c = sbrcs[sbrci]
   end
- else 
+ else
   if (btn(0)) sbr.x-=12
   if (btn(1)) sbr.x+=12
   if (btn(2)) sbr.y-=12
@@ -151,8 +177,9 @@ function game_update()
  -- if (pressed) sbr.toggle(sbr)
  -- shift key
 
- if (btnp(4,1) or lit_pressed != gpio[1]) sbr.toggle(sbr)
- lit_pressed = gpio[1]
+ -- gpio 4
+ if (btnp(4,1) or lit_pressed != gpio[5]) sbr.toggle(sbr)
+ lit_pressed = gpio[5]
  --if (btnp(5,1)) across = not across
 
  --sbr2.update(sbr2)
@@ -340,7 +367,9 @@ function game_draw()
  --sbr2.draw(sbr2)
  -- print('x: '..mx..' y: '..my..' b: '..mb,0,0,7)
  -- print('a: '..sbr.a..' da: '..sbr.da,0,8,7)
- print( (peek(0x5f80)/255),8,2,8)
+
+ -- score
+ -- print(points,3,2,8)
 end
 
 -- door
@@ -410,6 +439,7 @@ function spawn_enemy(door)
 				e.hurting += 1
 				if e.hurting > 5 then
 					del(enemies, e)
+      points += 1
 				end
 			end
 			if e.t==e.stopt then 
@@ -665,7 +695,9 @@ function init_saber(c)
   sparks={},
   pa=0,
   px=0,
-  py=0
+  py=0,
+  dx=0, -- added for iphone control
+  dy=0
  }
 
  s.update=function(s)
@@ -927,19 +959,27 @@ end
 function game_over()
  _update = over_update
  _draw   = over_draw
+ over_points = points
  t = 0
 end
 
 function over_update()
  mx, my, mb = mouse()
+ gpio = {}
+ for i=0x5f80, 0x5fa0 do 
+  add(gpio, peek(i))
+ end
  t += .015
- if t > 10 and (mb == 1 or btnp(4)) then
+
+ -- gpio 1
+ if t > .015*40 and (mb == 1 or btnp(4) or gpio[2] == 1) then
   _init()
  end
  if t < 1 then
   game_update()
  end
  sbr.update(sbr)
+ points = over_points -- in case we kill after game over somehow
 end
 
 function over_draw()
@@ -947,9 +987,18 @@ function over_draw()
  s = 'game over'
  print(s, 64 - #s*2,62 - sin(t)*2+1, 0)
  print(s, 64 - #s*2,62 - sin(t)*2, 8)
- s = 'click mouse to restart'
+ if has_gpio then
+  s = 'press 1 to restart'
+ else
+  s = 'click mouse to restart'
+ end
+ print(s, 64 - #s*2,91, 1)
  print(s, 64 - #s*2,90, 12)
- print(s, 64 - #s*2,90, 1)
+
+ s = 'score:'..points
+ rectfill(64-#s*2-3, 75,
+           64+#s*2+2, 83,0)
+ print('score:'..points,64-#s*2,77,7)
 
 end
 
