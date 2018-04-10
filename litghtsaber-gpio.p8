@@ -99,6 +99,7 @@ function game_update()
  if has_gpio then -- iphone control
   -- yaw
   reverse = (gpio[6] * 2)-1
+  pre_a = sbr.a
   sbr.a = gpio[1]/255 * reverse
   -- change color
   -- gpio 6
@@ -112,10 +113,28 @@ function game_update()
   sbr.dy += ((gpio[12]/255) * 12 - 6) * 2
   sbr.dx *= .95
   sbr.dy *= .95
+  pre_tx = cos(pre_a) * sbr.h + sbr.x
+  pre_ty = sin(pre_a) * sbr.h + sbr.y
+
   sbr.x = mid(0,128, sbr.x+sbr.dx)
   sbr.y = mid(0,128, sbr.y+sbr.dy)
   sbr.x = ((sbr.x - 64) * .925 + 64)
   sbr.y = ((sbr.y - 120) * .85 + 120)
+
+  post_tx = cos(sbr.a) * sbr.h + sbr.x
+  post_ty = sin(sbr.a) * sbr.h + sbr.y
+
+  bdxy = distance(0,0,sbr.dx,sbr.dy)
+  tdxy = distance(pre_tx, pre_ty, post_tx, post_ty)
+
+  if max(bdxy, tdxy) > 12  and moved_t > 10 and sbr.on then
+   sfx(flr(3 + rnd(3)))
+   moved = true
+   moved_t = 0
+  else
+   moved = false
+   moved_t += 1
+  end
  elseif mouse_control then 
   mx, my, mb = mouse()
   local pressed = false
