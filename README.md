@@ -1,5 +1,7 @@
 # Litghtsaber
 
+*to play the original: https://github.com/Chovin/Litghtsaber/tree/master*
+
 ## install
 
 ```sh
