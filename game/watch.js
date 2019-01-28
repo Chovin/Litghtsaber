@@ -125,18 +125,26 @@ oscPort.on("message", function (msg) {
     	}
     	accel_samples = new_samples;
     }
-    if (msg.address.endsWith('/quaternion')) {
-        let q = msg.args
-        q = [q[1],q[2],q[3],q[0]]
-        // vert
-        let v = [0,1,0]
-        let r = rot_vec_by_quat(v, q)
-        // get angle of rotation on xy plane
-        let a = Math.atan2(r[1], r[0])
-        console.log(a)
-        a = Math.floor((a/PI2 + 1)%1 * 255)
-        console.log(a);
+    // if (msg.address.endsWith('/quaternion')) {
+    //     let q = msg.args
+    //     q = [q[1],q[2],q[3],q[0]]
+    //     // vert
+    //     let v = [0,1,0]
+    //     let r = rot_vec_by_quat(v, q)
+    //     // get angle of rotation on xy plane
+    //     let a = Math.atan2(r[1], r[0])
+    //     console.log(a)
+    //     a = Math.floor((a/PI2 + 1)%1 * 255)
+    //     console.log(a);
+    //     pico8_gpio[0] = a;
+    // }
+    if (msg.address.endsWith('/gravity')) {
+        let g = msg.args
+        let x = g[0]
+        let z = g[1]
+        let y = g[2]
+        let yaw = Math.atan2(z, y);
+        let a = Math.floor((yaw/PI2 + 1.25)%1 * 255);
         pico8_gpio[0] = a;
-
     }
 });
