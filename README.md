@@ -17,9 +17,10 @@ install Zig Sim on [iPhone](https://itunes.apple.com/us/app/zig-sim/id1112909974
     * Using hotspot works well to get around router issues
 2. in project root, using the same ip/port do `node . <ip> [port]` (port is 6449 by default)
 3. Open Zig Sim 
-    1. send to comp's IP/port (local preferred)
-    2. make sure it's set to OSC
-    3. press start. It will turn green if set up correctly
+    1. check `gravity` and `remotecontrol` (or just check everything. I don't keep this readme updated anyways..)
+    2. send to comp's IP/port (local preferred)
+    3. make sure it's set to OSC
+    4. press start. It will turn green if set up correctly
 4. open browser to [http://localhost:8081](http://localhost:8081)
 
 ## play
@@ -31,5 +32,4 @@ Press **up volume button**) to turn on your lightsaber.
 
 ## issues
 
-* Quaternion math isn't right yet, so you may need to be facing North to play this :P I'd love some help in [issue #2](https://github.com/Chovin/Litghtsaber/issues/2) or a PR if you have any ideas on how to fix it.
 * audio doesn't work on chrome. I'd like to find a way to fix this without digging into PICO-8's output web files. Maybe an update of PICO-8 will fix it /shrug
