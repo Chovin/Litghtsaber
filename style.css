@@ -1,0 +1,57 @@
+      body {
+          background-color: rgb(48, 48, 48);
+          text-align: center;
+      }
+
+      .btn,
+      button {
+          padding: .33em;
+          display: block;
+          background-color: #58d;
+          border: none;
+          border-radius: .75em;
+          font-family: sans-serif;
+          color: white;
+          box-shadow: 0px 2px 5px -1px rgba(0, 0, 0, .8);
+          width: 60%;
+          margin: 0 auto;
+          font-size: 32;
+          text-transform: uppercase;
+      }
+
+      .btn:active,
+      button:active {
+          box-shadow: 0 0px #666;
+          transform: scale(.99, .98);
+          outline: 0;
+      }
+
+      button:focus {
+          outline: 0;
+      }
+
+      a {
+          text-decoration: none;
+      }
+
+      hr {
+          width: 30%;
+      }
+
+      input[type="text"] {
+          font-size: 28;
+          text-align: center;
+      }
+
+      #controller {
+          display: none;
+      }
+
+      #msg,
+      #debug {
+          margin: 0 auto;
+          text-align: center;
+          font-size: 28;
+          color: white;
+          height: 1em;
+      }

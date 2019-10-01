@@ -40,15 +40,66 @@ accel_samples = 0;
 pico8_gpio = new Array(128);
 
 console.log('listening');
-
-oscPort.on("message", function (msg) {
-    if (msg.address == '/gyrosc/gyro') {
-    	yaw = msg.args[2];
-    	yaw = Math.floor(((yaw/PI2 + 1)%1) * 255)
-    	// console.log('gyro yaw', yaw);
-    	pico8_gpio[0] = yaw;
+function addab(a,b) {
+    return a + b
+}
+function multab(a,b){
+    return a * b
+}
+function doopv(op, a, b){
+    if (!(a instanceof Array)) {
+        a = [a,a,a,a]
+    }if (!(b instanceof Array)) {
+        b = [b,b,b,b]
     }
-    if (msg.address == '/gyrosc/button') {
+    let r = []
+    for (let i=0; i<a.length; i++) {
+        r.push(op(a[i], b[i]))
+    }
+    return r
+}
+function mult(a, b) {
+    return doopv(multab, a, b)
+}
+function add(a, b) {
+    return doopv(addab, a, b)
+}
+dot = math.dot
+cross = math.cross
+
+// https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
+function rot_vec_by_quat(v, q) {
+    // x,y,z
+    let u = [q[0],q[1],q[2]];
+    let s = q[3];
+
+    return add(add(mult(mult(2.0, dot(u, v)), u),
+                   mult(add(s*s, mult(-1, dot(u, u))), v)),
+               mult(2.0*s, cross(u, v)));
+}
+
+ignore_down = false;
+oscPort.on("message", function (msg) {
+    if (msg.address.endsWith('/remotecontrol')) {
+        //console.log(msg);
+        up = msg.args[1]==1;
+        down = msg.args[2]==1;
+        if (up) {
+            pico8_gpio[4] = !pico8_gpio[4];
+        }
+        if (down && !ignore_down) {
+            pico8_gpio[6] = !pico8_gpio[6];
+            ignore_down = true;
+            window.setTimeout(() => { ignore_down = false; }, 100);
+        }
+    }
+    // if (msg.address.endsWith('/gyro')) {
+    // 	yaw = msg.args[2];
+    // 	yaw = Math.floor(((yaw/PI2 + 1)%1) * 255)
+    // 	//console.log('gyro yaw', yaw);
+    // 	pico8_gpio[0] = yaw;
+    // }
+    if (msg.address.endsWith('/button')) {
     	btn = msg.args[0]
     	// console.log('button ' + btn + ': ', msg.args[1]);
 	    pico8_gpio[btn] = msg.args[1];
@@ -57,7 +108,7 @@ oscPort.on("message", function (msg) {
 			accel_samples = 0;
 	    }
     }
-    if (msg.address == '/gyrosc/accel') {
+    if (msg.address.endsWith('/accel')) {
     	// (avg * n + new_number)/(n+1)
     	// (a * n)/(n+1) + new_number/(n+1)
     	// a * (n/(n+1)) + new_number/(n+1)  // avoid overflow
@@ -74,4 +125,28 @@ oscPort.on("message", function (msg) {
     	}
     	accel_samples = new_samples;
     }
+    // if (msg.address.endsWith('/quaternion')) {
+    //     let q = msg.args
+    //     q = [q[1],q[2],q[3],q[0]]
+    //     // vert
+    //     let v = [0,1,0]
+    //     let r = rot_vec_by_quat(v, q)
+    //     // get angle of rotation on xy plane
+    //     let a = Math.atan2(r[1], r[0])
+    //     console.log(a)
+    //     a = Math.floor((a/PI2 + 1)%1 * 255)
+    //     console.log(a);
+    //     pico8_gpio[0] = a;
+    // }
+    
+    if (msg.address.endsWith('/gravity')) {
+        let g = msg.args
+        let x = g[0]
+        let z = g[1]
+        let y = g[2]
+        let yaw = Math.atan2(z, y);
+        let a = Math.floor((yaw/PI2 + 1.25)%1 * 255);
+        pico8_gpio[0] = a;
+    }
+
 });
