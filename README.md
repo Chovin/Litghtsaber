@@ -1,6 +1,7 @@
 # Litghtsaber
 
-*to play the original: https://github.com/Chovin/Litghtsaber/tree/master*
+*play online: https://litghtsaber.chovin.repl.co/*
+*play the original: https://github.com/Chovin/Litghtsaber/tree/master*
 
 ## install
 
