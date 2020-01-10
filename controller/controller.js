@@ -36,8 +36,7 @@ function div(a, v) {
 
 
 var timeout = false
-function connect() {
-  let code = $('#code').val()
+function connect(code) {
   setLoading(true)
   connection = tryConnect(code)
   setTimeout(function() {timeout = true}, 10000)
@@ -130,8 +129,10 @@ function tryConnect(code) {
 
 var oriented = false
 var baseline = 0
+window.motion_detected = false
 
 function handleOrientation(event) {
+  window.motion_detected = true
   if (!oriented) {
     baseline = event.alpha
     oriented = true
@@ -149,6 +150,7 @@ var accel_samples = 0;
 
 function handleMotion(event) {
   var b = event.acceleration; 
+  window.motion_detected = true
     	// (avg * n + new_number)/(n+1)
     	// (a * n)/(n+1) + new_number/(n+1)
     	// a * (n/(n+1)) + new_number/(n+1)  // avoid overflow
@@ -245,6 +247,51 @@ window.addEventListener('deviceorientation', handleOrientation);
 
 window.addEventListener('devicemotion', handleMotion);
 
+
+// https://stackoverflow.com/questions/56514116/how-do-i-get-deviceorientationevent-and-devicemotionevent-to-work-on-safari/56764762#56764762
+if ( location.protocol != "https:" ) {
+location.href = "https:" + window.location.href.substring( window.location.protocol.length );
+}
+function permission (and_connect) {
+    if ( typeof( DeviceMotionEvent ) !== "undefined" ) { 
+      if ( typeof( DeviceMotionEvent.requestPermission ) === "function" ) {
+          // (optional) Do something before API request prompt.
+          DeviceMotionEvent.requestPermission()
+              .then( response => {
+              // (optional) Do something after API prompt dismissed.
+              if ( response == "granted" ) {
+                  window.addEventListener('deviceorientation', handleOrientation);
+                  window.addEventListener('devicemotion', handleMotion);
+                  if (and_connect) {
+                    connect($('#code').val())
+                  }
+                  $("#request").toggle('1s')
+              }
+          })
+              .catch( console.error )
+      }
+    } else {
+        alert( "Device unsupported :(" );
+    }
+}
+const btn = document.getElementById( "request" );
+btn.addEventListener( "click", permission );
+
+
+function connect_manual() {
+  if(!window.motion_detected){
+    permission(true)
+  }
+  else {
+    connect($('#code').val())
+  }
+}
+$("#request").toggle()
+setTimeout(function() {
+  if (!window.motion_detected) {
+    $("#request").toggle('1s')
+  }
+}, 2000)
 
 
 // function setup() {
