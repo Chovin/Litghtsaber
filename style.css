@@ -63,3 +63,35 @@
         color: white;
         height: 1em;
       }
+
+      #msgcontainer {
+        position: absolute; 
+        left: 50%; 
+        border: 10px solid white; 
+      }
+
+      .mv_msg {
+        -webkit-transition: all .5s; /* Safari prior 6.1 */
+        transition: all .5s;
+      }
+      .right_msg {
+        top: 62px;
+        left: 50%;
+        margin-left: 256px;
+      }
+      .middle_msg {
+        top: 128px;
+        left: 50%;
+        margin-left: -132px;
+      }
+      .top_msg {
+        top: -20%;
+        left: 50%;
+        margin-left: -132px;
+      }
+      .visible_msg {
+        opacity: 1
+      }
+      .invisible_msg {
+        opacity: 0;
+      }

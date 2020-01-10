@@ -49,13 +49,15 @@ canvas{
 
 -->
 </STYLE>
+<link rel="stylesheet" href="../style.css">
     
 </head>
 
 <body bgcolor=#303030>
 	<br>
-  <div id="msg" style="margin: 0 auto;text-align: center;font-size: 28;color: white;height: 1em;">
-    code:
+  <div id="msgcontainer" class="mv_msg top_msg">
+    <h1 id="msgheader" style="text-align: center; margin: 0 auto; padding-bottom: 10px; background-color: white;">PLAYER START</h1>
+    <div id="qr"></div>
   </div>
   <br>
   <br>
@@ -91,6 +93,7 @@ canvas{
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.4.2/math.min.js"></script>
   <script src="https://unpkg.com/peerjs@1.1.0/dist/peerjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 	<script src="controller.js"></script>
 
 	<script async type="text/javascript" src="index.js"></script>

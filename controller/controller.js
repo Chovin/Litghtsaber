@@ -286,10 +286,20 @@ function connect_manual() {
     connect($('#code').val())
   }
 }
+
+var from_url = false;
+url_parts = window.location.href.split('?code=')
+if (url_parts.length > 1) {
+  from_url = true;
+  $('#code').val(url_parts[1])
+}
+
 $("#request").toggle()
 setTimeout(function() {
   if (!window.motion_detected) {
     $("#request").toggle('1s')
+  } else if (from_url) {
+    connect($("#code").val())
   }
 }, 2000)
 
