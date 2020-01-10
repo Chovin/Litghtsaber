@@ -66,4 +66,9 @@ function newPeer() {
         });
     })
 }
+try {
+  newPeer()
+} catch(error) {
+  console.log(error)
 newPeer()
+}
