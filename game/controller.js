@@ -9,6 +9,13 @@ const code = String.fromCharCode.apply(null, array);
 console.log(code)
 console.log($('msg'))
 document.getElementById('msg').innerHTML = 'code: ' + code
+window.game_paused = false
+setTimeout(function() {
+  if (!window.game_paused) {
+    Module.pico8TogglePaused();
+    window.game_paused = true
+  }
+}, 7000)
 
 var player = 0;
 var peer = null;
@@ -26,6 +33,10 @@ function newPeer() {
             if (conn.player != player) {
                 conn.send('disconnecting')
             } else {
+        if (window.game_paused) {
+          Module.pico8TogglePaused();
+          window.game_paused = false
+        }
                 // if (!connected) {
                 //   conn.send('connected')
                 //   setTimeout(function() {
