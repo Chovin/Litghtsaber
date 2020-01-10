@@ -123,7 +123,8 @@ function tryConnect(code) {
     })
   });
   var err = false;
-  conn.on('error', function() {
+  conn.on('error', function(e) {
+    console.log('error', e);
     err = true;
   })
   if (err) {return false}
