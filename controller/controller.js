@@ -65,7 +65,11 @@ function connect(code) {
   // }
 }
 function error() {
+  if (from_url) {
+    $('#msg').html('Error connecting or slot taken. Try scanning again.')
+  } else {
   $('#msg').html('check your code')
+  }
   setTimeout(() => {
     $('#msg').html('')
   },3000)
