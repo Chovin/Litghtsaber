@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../style.css">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> -->
+    <!-- <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+  </head>
+  <body>
+    <div id="connect">
+      <br>
+      <br>
+      <br>
+      <input type="text" placeholder="connect code" id="code">
+      <br>
+      <p id="msg"></p>
+      <p id="connmsg"></p>
+      <br>
+      <button onclick="connect_manual()" id="connectBtn">connect</button>
+      <br>
+      <br>
+      <button id="request">gyro access</button>
+    </div>
+    <div id="controller">
+      <button onclick="resetMvnt()">reset (1)</button>
+      <br>
+      <br>
+      <button onclick="toggleSaber()">saber</button>
+      <br>
+      <br>
+      <button onclick="toggleColor()">color</button>
+
+      <br>
+      <br>
+      
+      <button onclick="toggleBackwards()">backwards</button>
+      <p id="instructions">
+        1. Hold your phone such that edge is facing the screen and the face is pointing either left or right</br>
+        2. Turn on your lightsaber</br>
+        3. Deflect those blaster bolts like your life depends on it!</br>
+        * If your litghtsaber is turning the wrong way, press the "backwards" button
+      </p>
+      <p id="debug"></p>
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.4.2/math.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.1.0/dist/peerjs.min.js"></script>
+    <script src="controller.js"></script>
+  </body>
+</html>

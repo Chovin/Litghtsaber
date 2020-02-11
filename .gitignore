@@ -1,0 +1,6 @@
+# mac
+.DS_Store
+
+game/bower_components/
+node_modules/
+.env
