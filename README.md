@@ -9,7 +9,7 @@ Litghtsaber is a [PICO-8](https://www.lexaloffle.com/pico-8.php) game that uses 
 
 
 *play online: https://litghtsaber.chovin.repl.co/*  
-*play the original: https://github.com/Chovin/Litghtsaber/tree/master*
+*play the original: https://github.com/Chovin/Litghtsaber/tree/original*
 
 ## install
 
