@@ -5,7 +5,7 @@
     "license": "(MIT OR GPL-2.0)",
     "dependencies": {
         "osc": "2.2.4",
-        "express": "4.13.4",
+        "express": "4.17.3",
         "ws": "1.1.0"
     }
 }
