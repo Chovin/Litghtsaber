@@ -34,7 +34,12 @@ var player = 0;
 var peer = null;
 
 function newPeer() {
-  peer = new Peer(actual_code)
+  peer = new Peer(actual_code, {
+    key: 'AJAfjkalkj3eElo193',
+    host: 'palico.chov.in',
+    port: 9000,
+    path: '/peer'
+  })
 
     player = 0;
 

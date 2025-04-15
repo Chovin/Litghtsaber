@@ -99,7 +99,12 @@ var connected = false;
 var stream_interval = null;
 var peer = null;
 function tryConnect(code) {
-  peer = new Peer(); 
+  peer = new Peer({
+    key: 'AJAfjkalkj3eElo193',
+    host: 'palico.chov.in',
+    port: 9000,
+    path: '/peer'
+  }); 
   var conn = peer.connect('litghtsaber_' + code);
   conn.on('open', function(){
     setTimeout(() => {
