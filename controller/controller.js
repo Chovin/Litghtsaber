@@ -102,7 +102,7 @@ function tryConnect(code) {
   peer = new Peer({
     key: 'AJAfjkalkj3eElo193',
     host: 'palico.chov.in',
-    port: 9000,
+    port: 443,
     path: '/peer'
   }); 
   var conn = peer.connect('litghtsaber_' + code);

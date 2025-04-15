@@ -37,7 +37,7 @@ function newPeer() {
   peer = new Peer(actual_code, {
     key: 'AJAfjkalkj3eElo193',
     host: 'palico.chov.in',
-    port: 9000,
+    port: 443,
     path: '/peer'
   })
 
