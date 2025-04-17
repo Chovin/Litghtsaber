@@ -48,13 +48,15 @@ function newPeer() {
       "wss://nos.lol",
       "wss://nostr.fmt.wiz.biz",
       "wss://nostrelay.circum.space"
-
     ]
   }, code)
   const [sendData, getData] = room.makeAction('data')
+  const [sendIdentity, getIdentity] = room.makeAction('identity')
+  const [sendTurn, getTurn] = room.makeAction('turn')
+
   function yourTurn() {
     console.log(`sending turn to ${players[0]}`)
-    sendData({msg: "you're up!"}, players[0])
+    sendTurn(players[0])
   }
   function resumeGame() {
     yourTurn()
@@ -64,7 +66,7 @@ function newPeer() {
 
   room.onPeerJoin(peerId => {
     players.push(peerId)
-    sendData({msg: "I'm the game"}, peerId)
+    sendIdentity("I'm the game", peerId)
     console.log(`${peerId} joined`)
     if (game_paused && peerId == players[0]) {
       resumeGame()
@@ -75,7 +77,9 @@ function newPeer() {
   })
 
   room.onPeerLeave(peerId => {
-    if (peerId == players[0]) {
+    first = players[0]
+    players.splice(players.indexOf(peerId), 1)
+    if (peerId == first) {
       Module.pico8Reset()
       if (players.length >= 1) {
         yourTurn()
@@ -84,16 +88,13 @@ function newPeer() {
         pauseShortly()
       }
     }
-    players.splice(players.indexOf(peerId), 1)
-    
   })
   
   getData((data, peerId) => {
-    if (peerId == players[0] && data.msg == "data") {
-      pico8_gpio = data.data
-    } else {
-      console.log(data)
-    }
+    if (peerId == players[0]) {
+      pico8_gpio = data
+    } 
+    console.log(data)
   })
 }
 try {

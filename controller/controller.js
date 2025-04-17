@@ -1,4 +1,4 @@
-import {joinRoom} from 'https://esm.run/trystero@0.21.0'
+import {joinRoom, selfId} from 'https://esm.run/trystero@0.21.0'
 var connection = null;
 var is_loading = false;
 var li = 0;
@@ -97,6 +97,7 @@ function swapControls(hide, show) {
 
 var connected = false;
 var stream_interval = null;
+var my_turn = false
 function tryConnect(code) {
   const room = joinRoom({appId: 'litghtsaber',
     relayUrls: [
@@ -107,29 +108,30 @@ function tryConnect(code) {
     ]
   }, code)
   const [sendData, getData] = room.makeAction('data')
+  const [sendIdentity, getIdentity] = room.makeAction('identity')
+  const [sendTurn, getTurn] = room.makeAction('turn')
   connected = true
-  sendData({msg: "I'm ready"})
-  getData((data, peerId) => {
+  getTurn((data, peerId) => {
     console.log(data)
     $('#connmsg').html(data.msg)
-    if (data.msg && data.msg == "you're up!") {
+    if (data == selfId) {
+      my_turn = true
       console.log('my turn')
-      sendData({msg: "I'm ready"}, peerId)
       setTimeout(() => {  
         stream_interval = setInterval(() => {
-          sendData({msg: "data", data: pico8_gpio}, peerId)
+          sendData(pico8_gpio, peerId)
         }, 10)
       }, 500)
-    } else if (data.msg && data.msg == "I'm the game") {
-      console.log('game is', peerId)
-    }
-    if (data.msg == 'disconnecting') {
+    } else if (my_turn){
       // swapControls('controller', 'connect')
       window.location.reload()
       room.leave()
       clearInterval(stream_interval)
       connected = false;
     }
+    getIdentity((data, peerId) => {
+      console.log('game is', peerId)
+    })
   })
   return true
 }
