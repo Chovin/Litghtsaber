@@ -363,10 +363,8 @@ export {
   toggleBackwards
 }
 
-window.funcs = {
-  connect_manual,
-  resetMvnt,
-  toggleSaber,
-  toggleColor,
-  toggleBackwards
-}
+window.connect_manual = connect_manual
+window.resetMvnt = resetMvnt
+window.toggleSaber = toggleSaber
+window.toggleColor = toggleColor
+window.toggleBackwards = toggleBackwards
