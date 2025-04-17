@@ -92,9 +92,8 @@ function newPeer() {
   
   getData((data, peerId) => {
     if (peerId == players[0]) {
-      pico8_gpio = data
+      window.pico8_gpio = data
     } 
-    console.log(data)
   })
 }
 try {
