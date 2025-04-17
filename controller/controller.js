@@ -165,13 +165,13 @@ function handleMotion(event) {
       let dims = [b.x, b.y, b.z];
     	for (let i=0; i<dims.length; i++) {
         dims[i] *= .6
-    		gi = 10 + i;
+    		let gi = 10 + i;
     		// -3  0  3
     		// 0  3  6  9  12
     		// /12 * 255
     		avg_accel[i] = avg_accel[i] * (accel_samples/new_samples) + dims[i]/new_samples;
-    		pry = ((dims[i]-avg_accel[i] + 6)/12)*255;
-    		pico8_gpio[gi] = pry;
+    		let pry = ((dims[i]-avg_accel[i] + 6)/12)*255;
+    		pico8_gpio[gi] = let ;
       }
       accel_samples = new_samples;
       
