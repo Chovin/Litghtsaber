@@ -46,7 +46,9 @@ function newPeer() {
     relayUrls: [
       "wss://relay.damus.io",
       "wss://nos.lol",
-      "wss://nostr.fmt.wiz.biz"
+      "wss://nostr.fmt.wiz.biz",
+      "wss://nostrelay.circum.space"
+
     ]
   }, code)
   const [sendData, getData] = room.makeAction('data')
