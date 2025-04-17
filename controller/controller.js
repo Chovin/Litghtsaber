@@ -161,7 +161,7 @@ function handleMotion(event) {
     	// (avg * n + new_number)/(n+1)
     	// (a * n)/(n+1) + new_number/(n+1)
     	// a * (n/(n+1)) + new_number/(n+1)  // avoid overflow
-    	new_samples = accel_samples + 1;
+    	let new_samples = accel_samples + 1;
       let dims = [b.x, b.y, b.z];
     	for (i=0; i<dims.length; i++) {
         dims[i] *= .6
@@ -295,7 +295,7 @@ function connect_manual() {
 }
 
 var from_url = false;
-url_parts = window.location.href.split('?code=')
+var url_parts = window.location.href.split('?code=')
 if (url_parts.length > 1) {
   from_url = true;
   $('#code').val(url_parts[1])
