@@ -98,12 +98,20 @@ function swapControls(hide, show) {
 var connected = false;
 var stream_interval = null;
 function tryConnect(code) {
-  const room = joinRoom({appId: 'litghtsaber'}, code)
+  const room = joinRoom({appId: 'litghtsaber',
+    nostrRelays: [
+      "wss://relay.damus.io",
+      "wss://nos.lol",
+      "wss://nostr.fmt.wiz.biz"
+    ]
+  }, code)
   const [sendData, getData] = room.makeAction('data')
   connected = true
   getData((data, peerId) => {
+    console.log(data)
     $('#connmsg').html(data.msg)
     if (data.msg && data.msg == "you're up!") {
+      console.log('my turn')
       setTimeout(() => {  
         stream_interval = setInterval(() => {
           sendData({msg: "data", data: pico8_gpio}, peerId)

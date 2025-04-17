@@ -42,9 +42,16 @@ const players = []
 var peer = null;
 
 function newPeer() {
-  const room = joinRoom({appId: 'litghtsaber'}, code)
+  const room = joinRoom({appId: 'litghtsaber',
+    nostrRelays: [
+      "wss://relay.damus.io",
+      "wss://nos.lol",
+      "wss://nostr.fmt.wiz.biz"
+    ]
+  }, code)
   const [sendData, getData] = room.makeAction('data')
   function yourTurn() {
+    console.log(`sending turn to ${players[0]}`)
     sendData({msg: "you're up!"}, players[0])
   }
   function resumeGame() {
@@ -55,6 +62,7 @@ function newPeer() {
 
   room.onPeerJoin(peerId => {
     players.push(peerId)
+    console.log(`${peerId} joined`)
     if (game_paused && peerId == players[0]) {
       resumeGame()
       $("#msgcontainer").removeClass('right_msg top_msg middle_msg');
