@@ -100,12 +100,12 @@ var stream_interval = null;
 var my_turn = false
 function tryConnect(code) {
   const room = joinRoom({appId: 'litghtsaber',
-    relayUrls: [
-      "wss://relay.damus.io",
-      "wss://nos.lol",
-      "wss://nostr.fmt.wiz.biz",
-      "wss://nostrelay.circum.space"
-    ]
+    // relayUrls: [
+    //   "wss://relay.damus.io",
+    //   "wss://nos.lol",
+    //   "wss://nostr.fmt.wiz.biz",
+    //   "wss://nostrelay.circum.space"
+    // ]
   }, code)
   const [sendData, getData] = room.makeAction('data')
   const [sendIdentity, getIdentity] = room.makeAction('identity')
