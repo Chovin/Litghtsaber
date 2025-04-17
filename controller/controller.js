@@ -171,7 +171,7 @@ function handleMotion(event) {
     		// /12 * 255
     		avg_accel[i] = avg_accel[i] * (accel_samples/new_samples) + dims[i]/new_samples;
     		let pry = ((dims[i]-avg_accel[i] + 6)/12)*255;
-    		pico8_gpio[gi] = let ;
+    		pico8_gpio[gi] = pry;
       }
       accel_samples = new_samples;
       
