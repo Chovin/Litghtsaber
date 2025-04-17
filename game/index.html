@@ -88,13 +88,11 @@ canvas{
 			// read and write to these values
 			var pico8_gpio = new Array(128);
 		*/
+		window.pico8_gpio = new Array(128);
 	</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 	<script src="controller.js" type="module"></script>
-	<script>
-		var pico8_gpio = window.pico8_gpio
-	</script>
 	<script async type="text/javascript" src="index.js"></script>
 	  
 	<script>
@@ -146,7 +144,9 @@ canvas{
 
 	</div></center>
 	<br><br>
-
+	<script>
+		console.log(pico8_gpio)
+	</script>
 </body></html>
 
 
