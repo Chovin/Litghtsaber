@@ -21,8 +21,6 @@ let qr = new QRCode(document.getElementById('qr'), {
 })
 
 
-$("#msgcontainer").removeClass('top_msg middle_msg invisible_msg');
-$("#msgcontainer").addClass('middle_msg visible_msg');
 
 let game_paused = false
 function pauseShortly(callback = () => {}) {
@@ -36,7 +34,22 @@ function pauseShortly(callback = () => {}) {
     }, 3000)
   }, 7000)
 }
-pauseShortly()
+let e = document.createElement('div')
+e.className = 'start_container'
+canvas.parentElement.appendChild(e)
+e.addEventListener('click', () => {
+  run()
+  pauseShortly()
+  e.remove()
+  $("#msgcontainer").removeClass('top_msg middle_msg invisible_msg');
+  $("#msgcontainer").addClass('middle_msg visible_msg');
+  try {
+    newPeer()
+  } catch(error) {
+    console.log(error)
+  // newPeer()
+  }
+})
 
 const players = []
 var peer = null;
@@ -96,12 +109,7 @@ function newPeer() {
     } 
   })
 }
-try {
-  newPeer()
-} catch(error) {
-  console.log(error)
-// newPeer()
-}
+
 export { pico8_gpio }
 window.pico8_gpio = pico8_gpio
 window.players = players

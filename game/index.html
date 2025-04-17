@@ -46,6 +46,25 @@ canvas{
     -ms-interpolation-mode: nearest-neighbor;
     border: 0px
 }
+.pico8_container {
+	position: relative;
+}
+.pico8_container .start_container {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 512px;
+	z-index: 2;
+	background: url('../assets/play.png') no-repeat center center;
+	box-sizing: border-box;
+	border: 1px solid #fff;
+	background-size: 200px;
+}
+.pico8_container .start_container:hover {
+	background: url('../assets/play_hover.png') no-repeat center center;
+	background-size: 200px;
+}
 
 -->
 </STYLE>
@@ -62,7 +81,7 @@ canvas{
   <br>
   <br>
 
-	<center><div style="width:512px;">
+	<center><div style="width:512px;" class="pico8_container">
 
 	<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
