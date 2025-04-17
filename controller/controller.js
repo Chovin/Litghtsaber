@@ -163,7 +163,7 @@ function handleMotion(event) {
     	// a * (n/(n+1)) + new_number/(n+1)  // avoid overflow
     	let new_samples = accel_samples + 1;
       let dims = [b.x, b.y, b.z];
-    	for (i=0; i<dims.length; i++) {
+    	for (let i=0; i<dims.length; i++) {
         dims[i] *= .6
     		gi = 10 + i;
     		// -3  0  3
@@ -186,7 +186,7 @@ var buff = {
     let keys = ['x','y','z']
     return div(buff[x].reduce((a, b) => {
       let r = {}
-      for (k of keys) {
+      for (let k of keys) {
         r[k] = a[k] + b[k]
       }
       return r
@@ -201,7 +201,7 @@ function handleGravity(e) {
   let keys = ['x','y','z']
   function fmt(v) {
     let s = ''
-    for (k of keys) {
+    for (let k of keys) {
       s += `${k}: ${Math.round(v[k]*100)/100}<br>`
     }
     return s
