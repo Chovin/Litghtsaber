@@ -64,6 +64,7 @@ function newPeer() {
 
   room.onPeerJoin(peerId => {
     players.push(peerId)
+    sendData({msg: "I'm the game"}, peerId)
     console.log(`${peerId} joined`)
     if (game_paused && peerId == players[0]) {
       resumeGame()

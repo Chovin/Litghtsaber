@@ -118,6 +118,8 @@ function tryConnect(code) {
           sendData({msg: "data", data: pico8_gpio}, peerId)
         }, 10)
       }, 500)
+    } else if (data.msg && data.msg == "I'm the game") {
+      console.log('game is', peerId)
     }
     if (data.msg == 'disconnecting') {
       // swapControls('controller', 'connect')
