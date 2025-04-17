@@ -104,3 +104,4 @@ try {
 }
 export { pico8_gpio }
 window.pico8_gpio = pico8_gpio
+window.players = players
