@@ -99,7 +99,7 @@ var connected = false;
 var stream_interval = null;
 function tryConnect(code) {
   const room = joinRoom({appId: 'litghtsaber',
-    nostrRelays: [
+    relayUrls: [
       "wss://relay.damus.io",
       "wss://nos.lol",
       "wss://nostr.fmt.wiz.biz"

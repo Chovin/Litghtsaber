@@ -43,7 +43,7 @@ var peer = null;
 
 function newPeer() {
   const room = joinRoom({appId: 'litghtsaber',
-    nostrRelays: [
+    relayUrls: [
       "wss://relay.damus.io",
       "wss://nos.lol",
       "wss://nostr.fmt.wiz.biz"
