@@ -52,13 +52,15 @@
     
     <script src="controller.js" type="module"></script>
     <script>
-      var {
-        connect_manual,
-        resetMvnt,
-        toggleSaber,
-        toggleColor,
-        toggleBackwards
-      } = window.funcs
+      window.addEventListener('DOMContentLoaded', () => {
+        const {
+          connect_manual,
+          resetMvnt,
+          toggleSaber,
+          toggleColor,
+          toggleBackwards
+        } = window.funcs;
+      });
     </script>
   </body>
 </html>
