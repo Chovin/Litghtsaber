@@ -108,11 +108,13 @@ function tryConnect(code) {
   }, code)
   const [sendData, getData] = room.makeAction('data')
   connected = true
+  sendData({msg: "I'm ready"})
   getData((data, peerId) => {
     console.log(data)
     $('#connmsg').html(data.msg)
     if (data.msg && data.msg == "you're up!") {
       console.log('my turn')
+      sendData({msg: "I'm ready"}, peerId)
       setTimeout(() => {  
         stream_interval = setInterval(() => {
           sendData({msg: "data", data: pico8_gpio}, peerId)
