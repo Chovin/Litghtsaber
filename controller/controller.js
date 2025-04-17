@@ -118,18 +118,6 @@ function tryConnect(code) {
       connected = false;
     }
   })
-  conn.on('open', function(){
-    setTimeout(() => {
-      stream_interval = setInterval(() => {
-        conn.send(pico8_gpio)
-      }, 10)
-    }, 500)
-  });
-  var err = false;
-  conn.on('error', function(e) {
-    console.log('error', e);
-    err = true;
-  })
   return true
 }
 
