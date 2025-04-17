@@ -1,4 +1,4 @@
-import {joinRoom} from '../lib/trystero-nostr.min.js'
+import {joinRoom} from 'https://esm.run/trystero@0.21.0'
 
 var pico8_gpio = new Array(128);
 
