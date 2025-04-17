@@ -1,9 +1,9 @@
-
+import {joinRoom} from '../lib/trystero-nostr.min.js'
 var connection = null;
 var is_loading = false;
 var li = 0;
 const PI2 = 6.28318530718;
-pico8_gpio = new Array(128);
+const pico8_gpio = new Array(128);
 
 function dot(a, b) {
   return a.x*b.x + a.y*b.y + a.z*b.z
@@ -97,42 +97,39 @@ function swapControls(hide, show) {
 
 var connected = false;
 var stream_interval = null;
-var peer = null;
 function tryConnect(code) {
-  peer = new Peer({
-    key: 'AJAfjkalkj3eElo193',
-    host: 'palico.chov.in',
-    port: 443,
-    path: '/peer'
-  }); 
-  var conn = peer.connect('litghtsaber_' + code);
+  const room = joinRoom({appId: 'litghtsaber'}, code)
+  const [sendData, getData] = room.makeAction('data')
+  connected = true
+  getData((data, peerId) => {
+    $('#connmsg').html(data.msg)
+    if (data.msg && data.msg == "you're up!") {
+      setTimeout(() => {  
+        stream_interval = setInterval(() => {
+          sendData({msg: "data", data: pico8_gpio}, peerId)
+        }, 10)
+      }, 500)
+    }
+    if (data.msg == 'disconnecting') {
+      // swapControls('controller', 'connect')
+      window.location.reload()
+      room.leave()
+      clearInterval(stream_interval)
+      connected = false;
+    }
+  })
   conn.on('open', function(){
     setTimeout(() => {
       stream_interval = setInterval(() => {
         conn.send(pico8_gpio)
       }, 10)
     }, 500)
-    connected = !peer.disconnected
-    conn.on('data', function(data) {
-      $('#connmsg').html(data)
-      // if (data == 'connected') {
-      //   connected = true;
-      // }
-      if (data == 'disconnecting') {
-        // swapControls('controller', 'connect')
-        window.location.reload()
-        peer.destroy()
-        clearInterval(stream_interval)
-        connected = false;
-      }
-    })
   });
   var err = false;
   conn.on('error', function(e) {
     console.log('error', e);
     err = true;
   })
-  if (err) {return false}
   return true
 }
 
@@ -357,3 +354,19 @@ setTimeout(function() {
 //     cylinder(1,50);
 //   pop()
 // }
+
+export {
+  connect_manual,
+  resetMvnt,
+  toggleSaber,
+  toggleColor,
+  toggleBackwards
+}
+
+window.funcs = {
+  connect_manual,
+  resetMvnt,
+  toggleSaber,
+  toggleColor,
+  toggleBackwards
+}

@@ -1,4 +1,6 @@
-pico8_gpio = new Array(128);
+import {joinRoom} from '../lib/trystero-nostr.min.js'
+
+var pico8_gpio = new Array(128);
 
 const validChars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz23456789';
 function new_code() {
@@ -11,10 +13,10 @@ const code = String.fromCharCode.apply(null, array);
 const code = new_code();
 
 console.log(code)
-actual_code = 'litghtsaber_' + code
-base_url = window.location.href.split('game')[0]
-url = base_url + "controller/" + "?code=" + code
-qr = new QRCode(document.getElementById('qr'), {
+let actual_code = 'litghtsaber_' + code
+let base_url = window.location.href.split('game')[0]
+let url = base_url + "controller/" + "?code=" + code
+let qr = new QRCode(document.getElementById('qr'), {
   text: url,
 })
 
@@ -22,58 +24,70 @@ qr = new QRCode(document.getElementById('qr'), {
 $("#msgcontainer").removeClass('top_msg middle_msg invisible_msg');
 $("#msgcontainer").addClass('middle_msg visible_msg');
 
-window.game_paused = false
-setTimeout(function() {
-  if (!window.game_paused) {
-    Module.pico8TogglePaused();
-    window.game_paused = true
-  }
-}, 7000)
+let game_paused = false
+function pauseShortly(callback = () => {}) {
+  setTimeout(function() {
+    if (!game_paused) {
+      Module.pico8TogglePaused();
+      game_paused = true
+    }
+    setTimeout(() => {
+      callback()
+    }, 3000)
+  }, 7000)
+}
+pauseShortly()
 
-var player = 0;
+const players = []
 var peer = null;
 
 function newPeer() {
-  peer = new Peer(actual_code, {
-    key: 'AJAfjkalkj3eElo193',
-    host: 'palico.chov.in',
-    port: 443,
-    path: '/peer'
+  const room = joinRoom({appId: 'litghtsaber'}, code)
+  const [sendData, getData] = room.makeAction('data')
+  function yourTurn() {
+    sendData({msg: "you're up!"}, players[0])
+  }
+  function resumeGame() {
+    yourTurn()
+    Module.pico8TogglePaused();
+    game_paused = false
+  }
+
+  room.onPeerJoin(peerId => {
+    players.push(peerId)
+    if (game_paused && peerId == players[0]) {
+      resumeGame()
+      $("#msgcontainer").removeClass('right_msg top_msg middle_msg');
+      $("#msgcontainer").addClass('right_msg');
+      document.getElementById("msgheader").innerText = "NEXT PLAYERS"
+    }
   })
 
-    player = 0;
-
-    peer.on('connection', function (conn) {
-        player += 1
-        conn.player = player
-        let connected = false
-        conn.on('data', function (data) {
-            if (conn.player != player) {
-                conn.send('disconnecting')
-            } else {
-        if (window.game_paused) {
-          Module.pico8TogglePaused();
-          window.game_paused = false
-        }
-        $("#msgcontainer").removeClass('right_msg top_msg middle_msg');
-        $("#msgcontainer").addClass('right_msg');
-        document.getElementById("msgheader").innerText = "NEXT PLAYERS"
-                // if (!connected) {
-                //   conn.send('connected')
-                //   setTimeout(function() {
-                //     conn.send('connected')
-                //   },300)
-                //   connected = true
-                // }
-                console.log(data);
-                pico8_gpio = data
-            }
-        });
-    })
+  room.onPeerLeave(peerId => {
+    if (peerId == players[0]) {
+      Module.pico8Reset()
+      if (players.length >= 1) {
+        yourTurn()
+        pauseShortly(resumeGame)
+      } else {
+        pauseShortly()
+      }
+    }
+    players.splice(players.indexOf(peerId), 1)
+    
+  })
+  
+  getData((data, peerId) => {
+    if (peerId == players[0]) {
+      pico8_gpio = data.data
+    }
+  })
 }
 try {
   newPeer()
 } catch(error) {
   console.log(error)
-newPeer()
+// newPeer()
 }
+export { pico8_gpio }
+window.pico8_gpio = pico8_gpio
