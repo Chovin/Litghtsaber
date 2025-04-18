@@ -1,6 +1,6 @@
 # Litghtsaber
 
-Litghtsaber is a [PICO-8](https://www.lexaloffle.com/pico-8.php) game that uses [PeerJS](https://peerjs.com/) to let you swing a litghtsaber around like a badass using your phone's accerlerometer. Deflect those blaster bolts! 😱
+Litghtsaber is a [PICO-8](https://www.lexaloffle.com/pico-8.php) game that uses ~~[PeerJS](https://peerjs.com/)~~ [Trystero](https://github.com/dmotz/trystero) to let you swing a litghtsaber around like a badass using your phone's accerlerometer. Deflect those blaster bolts! 😱
 
 * It's completely browser-based which means all you need to play it are 2 devices with browsers! phone + phone, phone + laptop, tablet + tablet? Are you crazy? 🤨
 * It's peer to peer, which means if you're on the same network, you'll get nice low, smooth latencies! That litghtsaber will swing like butter! (unless you're on overloaded hotel wifi 😩)
@@ -8,7 +8,7 @@ Litghtsaber is a [PICO-8](https://www.lexaloffle.com/pico-8.php) game that uses 
 * It's got juicey sound effects and graphics. Go ahead, try not to feel like a badass. I dare you. 😎
 
 
-*play online: https://litghtsaber.chovin.repl.co/*  
+*play online: https://chov.in/Litghtsaber/*  
 *play the original: https://github.com/Chovin/Litghtsaber/tree/original*
 
 ## install
